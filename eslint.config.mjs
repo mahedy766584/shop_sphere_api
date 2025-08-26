@@ -57,7 +57,8 @@ export default [
 
       '@typescript-eslint/consistent-type-imports': 'warn',
 
-      'prettier/prettier': 'error',
+      // 'prettier/prettier': 'error',
+      'prettier/prettier': ['error', { singleQuote: true, semi: true }],
     },
     settings: {
       'import/resolver': {
