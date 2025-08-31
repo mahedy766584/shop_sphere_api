@@ -53,8 +53,6 @@ export const userValidationSchema = z.object({
       .optional(),
     address: addressValidationSchema.optional(),
     profileImage: z.url('Profile image must be a valid URL').default('https://ibb.co/jkx7zn2'),
-    isEmailVerified: z.boolean().default(false).optional(),
-    isBanned: z.boolean().default(false).optional(),
   }),
 });
 

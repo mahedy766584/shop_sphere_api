@@ -2,11 +2,10 @@ import status from 'http-status';
 
 import catchAsync from '../../utils/catchAsync.js';
 import sendResponse from '../../utils/sendResponse.js';
-
 import { UserService } from './user.service.js';
 
 const createUserIntoDB = catchAsync(async (req, res) => {
-  const result = await UserService.createUserIntoDB(req.body);
+  const result = await UserService.createUserIntoDB(req.file, req.body);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,

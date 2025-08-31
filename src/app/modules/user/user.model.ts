@@ -1,4 +1,7 @@
+import bcrypt from 'bcrypt';
 import { model, Schema } from 'mongoose';
+
+import config from '@config/index.js';
 
 import type { TAddress, TName, TUser, UserModel } from './user.interface.js';
 
@@ -119,9 +122,28 @@ const userSchema = new Schema<TUser>(
       type: Boolean,
       default: false,
     },
+    status: {
+      type: String,
+      enum: {
+        values: ['active', 'pending', 'blocked', 'suspended', 'deleted'],
+        message: 'Role must be one of: active, pending, blocked, suspended, deleted',
+      },
+      default: 'active',
+    },
     isBanned: {
       type: Boolean,
       default: false,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+    tokenVersion: {
+      type: Number,
+      default: 0,
+    },
+    passwordChangedAt: {
+      type: Date,
     },
   },
   {
@@ -137,8 +159,30 @@ userSchema.virtual('fullName').get(function () {
 });
 
 userSchema.statics.isUserExistByUserName = async function (userName: string) {
-  const userExist = await User.findOne({ userName });
-  return userExist;
+  return await User.findOne({ userName }).select('+password');
+};
+
+userSchema.pre('save', async function (next) {
+  this.password = await bcrypt.hash(this.password, Number(config.password_salt_rounds));
+  next();
+});
+
+userSchema.post('save', function (doc, next) {
+  doc.password = '';
+  next();
+});
+
+userSchema.statics.isPasswordMatched = async function (plainTextPassword, hashedPassword) {
+  return await bcrypt.compare(plainTextPassword, hashedPassword);
+};
+
+userSchema.statics.isJwtIssuedBeforePasswordChanged = function (
+  passwordChangedTimestamp: Date,
+  jwtIssuedTimestamp: number,
+) {
+  const passwordChangedTime = new Date(passwordChangedTimestamp).getTime() / 1000;
+
+  return passwordChangedTime > jwtIssuedTimestamp;
 };
 
 export const User = model<TUser, UserModel>('User', userSchema);

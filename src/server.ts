@@ -2,8 +2,8 @@
 /* eslint-disable no-console */
 import mongoose from 'mongoose';
 
-import config from './app/config/index.js';
 import app from './app.js';
+import config from './app/config/index.js';
 
 const port = config.port;
 
