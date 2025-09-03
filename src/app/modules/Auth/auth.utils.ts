@@ -37,10 +37,18 @@ export const generateRefreshToken = (payload: AccessPayload) => {
   return signToken(payload, config.jwt_refresh_secret!, config.jwt_refresh_expires_in!);
 };
 
+export const generateEmailVerificationToken = (userName: string): string => {
+  return signToken({ userName }, config.jwt_email_secret!, config.email_verification_expires_in!);
+};
+
 export const verifyAccessToken = (token: string): JwtPayload => {
   return verifyToken(token, config.jwt_access_secret!);
 };
 
 export const verifyRefreshToken = (token: string): JwtPayload => {
   return verifyToken(token, config.jwt_refresh_secret!);
+};
+
+export const verifyEmailVerificationToken = (token: string): JwtPayload => {
+  return verifyToken(token, config.jwt_email_secret!);
 };

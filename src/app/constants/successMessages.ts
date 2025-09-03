@@ -7,6 +7,8 @@ export const SuccessMessages = {
     PASSWORD_RESET_LINK_SENT: 'Password reset link has been sent to your email.',
     PASSWORD_RESET_SUCCESS: 'Password has been reset successfully.',
     NEW_ACCESS_TOKEN: 'New token is generated successfully',
+    SENT_VERIFY_EMAIL: 'Verification email sent. Please check your inbox.',
+    EMAIL_VERIFIED: 'Email verified successfully.',
   },
 
   USER: {
@@ -14,6 +16,13 @@ export const SuccessMessages = {
     ACCOUNT_VERIFIED: 'Account verified successfully.',
     ACCOUNT_CREATED: 'Account created successfully.',
     ACCOUNT_DELETED: 'Account deleted successfully.',
+  },
+
+  SELLER: {
+    SELLER_CREATED: 'Seller profile created successfully',
+    UPDATED: 'Seller profile updated successfully',
+    UPDATED_STATUS: 'Seller status updated successfully',
+    RETRIEVED: 'All seller is retrieved successfully.',
   },
 
   PRODUCT: {

@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Schema, model } from 'mongoose';
 
+import { slugPlugin } from '@utils/generateUniqSlug.js';
+
 import type { TAttributesProduct, TProduct } from './products.interface.js';
 
 const AttributeSchema = new Schema<TAttributesProduct>(
@@ -125,6 +127,8 @@ const ProductSchema = new Schema<TProduct>(
   { timestamps: true },
 );
 
+ProductSchema.plugin(slugPlugin, { source: 'name', field: 'slug' });
+
 // 🔹 Indexes (for performance in large datasets)
 ProductSchema.index({ name: 'text', description: 'text' }); // text search
 ProductSchema.index({ slug: 1 }, { unique: true }); // unique URL
@@ -133,4 +137,4 @@ ProductSchema.index({ 'attributes.key': 1, 'attributes.value': 1 }); // filter b
 ProductSchema.index({ price: 1 }); // price range filter
 ProductSchema.index({ stock: 1 }); // stock filter
 
-export const ProductModel = model('Product', ProductSchema);
+export const Product = model('Product', ProductSchema);

@@ -32,6 +32,7 @@ export type TUser = {
   isDeleted: boolean;
   tokenVersion?: number;
   passwordChangedAt?: Date;
+  emailVerifiedAt?: Date | null;
 };
 
 export interface UserModel extends Model<TUser> {

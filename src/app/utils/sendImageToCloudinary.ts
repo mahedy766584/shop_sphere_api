@@ -1,5 +1,5 @@
-/* eslint-disable no-undef */
 /* eslint-disable no-console */
+/* eslint-disable no-undef */
 import { v2 as cloudinary } from 'cloudinary';
 import type { UploadApiResponse } from 'cloudinary';
 import fs from 'fs';
@@ -14,30 +14,38 @@ cloudinary.config({
 });
 
 export const uploadImageToCloudinary = async (
-  imageName: string,
-  path: string,
-): Promise<UploadApiResponse> => {
-  return new Promise((resolve, reject) => {
-    cloudinary.uploader.upload(path, { public_id: imageName }, function (error, result) {
-      if (error) {
-        return reject(error);
-      }
+  files: Express.Multer.File | Express.Multer.File[] | undefined,
+  prefix: string,
+): Promise<string | string[] | null> => {
+  if (!files) return null;
 
-      if (!result) {
-        return reject(new Error('Upload failed with unknown error'));
-      }
+  const filesArray = Array.isArray(files) ? files : [files];
 
-      resolve(result);
+  const uploads = await Promise.all(
+    filesArray.map((file, index) => {
+      const imageName = `${prefix}-${Date.now()}-${index}`;
 
-      fs.unlink(path, (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          console.log('File is deleted.');
-        }
+      return new Promise<UploadApiResponse>((resolve, reject) => {
+        cloudinary.uploader.upload(file.path, { public_id: imageName }, function (error, result) {
+          if (error) return reject(error);
+          if (!result) return reject(new Error('Upload failed'));
+
+          resolve(result);
+
+          fs.unlink(file.path, (err) => {
+            if (err) {
+              console.error('File delete error:', err);
+            } else {
+              console.log(`File ${file.path} deleted successfully.`);
+            }
+          });
+        });
       });
-    });
-  });
+    }),
+  );
+
+  const urls = uploads.map((res) => res.secure_url);
+  return Array.isArray(files) ? urls : urls[0];
 };
 
 const storage = multer.diskStorage({

@@ -8,6 +8,7 @@ const validateRequest = <T extends ZodObject<ZodRawShape>>(schema: T) => {
     await schema.parseAsync({
       body: req.body,
       cookies: req.cookies,
+      query: req.query,
     });
     return next();
   });

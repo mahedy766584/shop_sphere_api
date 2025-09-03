@@ -18,6 +18,7 @@ export const sendEmail = async (to: string, resetLink: string) => {
     <p>You requested a password reset. Click the button below to set a new password:</p>
     <a href="${resetLink}" style="padding:10px 15px; background-color:#F28069; color:#fff; text-decoration:none; border-radius:5px;">Reset Password</a>
     <p>This link will expire in 10 minutes. If you didn't request this, please ignore this email.</p>
+    <a>${resetLink}</a>
     <p>Thanks,<br/>The Shop Sphere Team</p>
     `;
 

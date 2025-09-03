@@ -145,6 +145,10 @@ const userSchema = new Schema<TUser>(
     passwordChangedAt: {
       type: Date,
     },
+    emailVerifiedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

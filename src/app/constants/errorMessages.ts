@@ -11,6 +11,7 @@ export const ErrorMessages = {
     ACCESS_DENIED: 'Access denied. You do not have permission to perform this action.',
     PASSWORD_CHANGED: 'Password changed after token was issued. Please login again.',
     EXPIRED_TOKEN: 'Refresh token invalid or expired',
+    EMAIL_HAS_VERIFIED: 'Email already verified',
   },
 
   USER: {
@@ -23,6 +24,23 @@ export const ErrorMessages = {
     DELETED: 'This account has been deleted. Please create a new account to continue.',
     BLOCKED: 'Your account is currently blocked. Please contact support for assistance.',
     SUSPENDED: 'Your account is currently suspended. Please contact support for assistance.',
+    EMAIL_VERIFICATION_REQUIRED: 'Please verify your email first to continue.',
+    USERNAME_EXIST: 'User already exists with this user name',
+  },
+
+  SELLER: {
+    ONLY_CUSTOMER_CAN_APPLY: 'Only customers can apply to become sellers',
+    ALREADY_PENDING: 'Your seller application is already pending',
+    ALREADY_APPROVED: 'You are already an approved seller',
+    ALREADY_REJECTED: 'Your previous application was rejected',
+    SELLER_EXIST: 'Seller profile already exists',
+    NOT_FOUND: 'Seller profile not found',
+    NOT_VERIFIED: 'Your seller account is not verified to create products',
+  },
+
+  PRODUCT: {
+    PRODUCT_EXIST: 'Product with this name and brand already exists.',
+    NOT_ALLOWED_ATTRIBUTE: (field: string) => `Attribute "${field}" is not allowed.`,
   },
 
   VALIDATION: {
@@ -32,6 +50,7 @@ export const ErrorMessages = {
       `${field} must be at least ${length} characters long.`,
     MAX_LENGTH: (field: string, length: number) => `${field} must not exceed ${length} characters.`,
     INVALID_VALUE: (field: string) => `${field} has an invalid value.`,
+    NOT_ALLOWED: (field: string) => `You are not allowed to update this field: ${field}`,
   },
 
   SERVER: {
