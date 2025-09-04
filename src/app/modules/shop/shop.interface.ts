@@ -7,3 +7,5 @@ export type TShop = {
   isVerified: boolean;
   owner: Types.ObjectId;
 };
+
+// https://youtu.be/Rpd54oAHDD0

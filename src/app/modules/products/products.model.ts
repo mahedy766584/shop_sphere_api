@@ -110,6 +110,11 @@ const ProductSchema = new Schema<TProduct>(
       type: Boolean,
       default: true,
     },
+    shop: {
+      type: Schema.Types.ObjectId,
+      ref: 'Shop',
+      required: [true, 'Shop is required'],
+    },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: 'User',

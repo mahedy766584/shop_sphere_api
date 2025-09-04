@@ -27,7 +27,7 @@ const shopeSchema = new Schema<TShop>(
     },
     owner: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'SellerProfile',
       required: [true, 'Shop owner is required'],
     },
   },

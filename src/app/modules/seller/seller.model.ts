@@ -22,4 +22,4 @@ const SellerProfileSchema = new Schema<TSellerProfile>(
   { timestamps: true },
 );
 
-export const SellerProfile = model<TSellerProfile>('Seller', SellerProfileSchema);
+export const SellerProfile = model<TSellerProfile>('SellerProfile', SellerProfileSchema);

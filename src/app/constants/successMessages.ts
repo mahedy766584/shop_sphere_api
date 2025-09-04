@@ -25,6 +25,13 @@ export const SuccessMessages = {
     RETRIEVED: 'All seller is retrieved successfully.',
   },
 
+  SHOP: {
+    CREATED: 'Shop created successfully.',
+    UPDATED: 'Shop updated successfully.',
+    RETRIEVED: 'Shop is retrieved successfully',
+    VERIFIED_SUCCESS: 'Shop is verified successfully',
+  },
+
   PRODUCT: {
     CREATED: 'Product has been created successfully.',
     UPDATED: 'Product has been updated successfully.',

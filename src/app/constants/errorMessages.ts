@@ -40,7 +40,18 @@ export const ErrorMessages = {
 
   PRODUCT: {
     PRODUCT_EXIST: 'Product with this name and brand already exists.',
+    DISCOUNT: 'Discount cannot exceed 50% of original price.',
     NOT_ALLOWED_ATTRIBUTE: (field: string) => `Attribute "${field}" is not allowed.`,
+  },
+
+  SHOP: {
+    ALREADY_EXISTS: 'A shop with this name already exists.',
+    NOT_FOUND: 'The requested shop was not found.',
+    UNAUTHORIZED_OWNER: 'You are not authorized to manage this shop.',
+    NOT_VERIFIED: 'This shop is not verified. Please wait for admin approval.',
+    CREATE_FAILED: 'Failed to create the shop. Please try again later.',
+    UPDATE_FAILED: 'Failed to update the shop information.',
+    DELETE_FAILED: 'Failed to delete the shop.',
   },
 
   VALIDATION: {

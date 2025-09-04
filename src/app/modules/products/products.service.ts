@@ -22,23 +22,25 @@ const createProductIntoDB = async (
   session.startTransaction();
 
   try {
-    const userExist = await User.findById(userId);
-    if (!userExist) {
-      throw new AppError(status.NOT_FOUND, ErrorMessages.USER.NOT_FOUND);
-    }
-    if (userExist.isBanned) {
-      throw new AppError(status.NOT_FOUND, ErrorMessages.USER.BANNED);
-    }
-    if (userExist.isDeleted) {
-      throw new AppError(status.NOT_FOUND, ErrorMessages.USER.DELETED);
-    }
+    const userExist = await User.findById(userId).session(session);
+    if (!userExist) throw new AppError(status.NOT_FOUND, ErrorMessages.USER.NOT_FOUND);
+    if (userExist.isBanned) throw new AppError(status.FORBIDDEN, ErrorMessages.USER.BANNED);
+    if (userExist.isDeleted) throw new AppError(status.FORBIDDEN, ErrorMessages.USER.DELETED);
     if (userExist.role === 'seller' && !userExist?.isEmailVerified) {
       throw new AppError(status.FORBIDDEN, ErrorMessages.SELLER.NOT_VERIFIED);
     }
 
-    const existingProduct = await Product.findOne({ name: payload?.name, brand: payload?.brand });
+    const existingProduct = await Product.findOne({
+      name: payload?.name,
+      brand: payload?.brand,
+    }).session(session);
+
     if (existingProduct) {
       throw new AppError(status.CONFLICT, ErrorMessages.PRODUCT.PRODUCT_EXIST);
+    }
+
+    if (payload.discountPrice && payload.discountPrice > payload.price * 0.5) {
+      throw new AppError(status.BAD_REQUEST, ErrorMessages.PRODUCT.DISCOUNT);
     }
 
     if (payload.stock === 0) {
@@ -55,6 +57,8 @@ const createProductIntoDB = async (
     });
 
     payload.createdBy = new Types.ObjectId(userExist._id);
+
+    payload.isActive = false;
 
     if (files && files.length > 0) {
       const imageUrls = await uploadImageToCloudinary(files, payload?.name);
