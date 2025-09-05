@@ -10,8 +10,10 @@ import { ProductService } from './products.service.js';
 
 const createProductIntoDB = catchAsync(async (req, res) => {
   const { userId } = req.user;
+  const { shopId } = req.params;
   const result = await ProductService.createProductIntoDB(
     req.files as Express.Multer.File[],
+    shopId,
     userId,
     req.body,
   );

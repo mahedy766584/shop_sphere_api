@@ -76,7 +76,7 @@ const createProductValidationSchema = z
         .default(0),
 
       isFeatured: z.boolean().default(false),
-      isActive: z.boolean().default(true),
+      isActive: z.boolean().optional(),
     }),
   })
   // 🔹 discountPrice < price validation

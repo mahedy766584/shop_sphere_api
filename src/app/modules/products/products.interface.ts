@@ -20,6 +20,7 @@ export type TProduct = {
   averageRating: number;
   isFeatured: boolean;
   isActive: boolean;
+  isDeleted: boolean;
   shop: Types.ObjectId;
   createdBy: Types.ObjectId;
   updatedBy?: Types.ObjectId;

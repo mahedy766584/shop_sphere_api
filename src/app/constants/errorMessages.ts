@@ -39,9 +39,14 @@ export const ErrorMessages = {
   },
 
   PRODUCT: {
-    PRODUCT_EXIST: 'Product with this name and brand already exists.',
+    PRODUCT_NAME_BRAND_EXIST: 'Product with this name and brand already exists.',
     DISCOUNT: 'Discount cannot exceed 50% of original price.',
+    PRODUCT_EXIST: 'Product already exists in this shop',
     NOT_ALLOWED_ATTRIBUTE: (field: string) => `Attribute "${field}" is not allowed.`,
+    NOT_FOUND:
+      'The requested resource could not be found. Please verify your request and try again.',
+    DELETED: 'This product is not available for purchase.',
+    AVAILABLE: (field: string | number) => `Only ${field} items are available for this product.`,
   },
 
   SHOP: {
@@ -52,6 +57,7 @@ export const ErrorMessages = {
     CREATE_FAILED: 'Failed to create the shop. Please try again later.',
     UPDATE_FAILED: 'Failed to update the shop information.',
     DELETE_FAILED: 'Failed to delete the shop.',
+    NOT_OWNER: 'You are not the owner of this shop',
   },
 
   VALIDATION: {

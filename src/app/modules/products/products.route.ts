@@ -12,13 +12,13 @@ import { ProductValidation } from './products.validation.js';
 const router = Router();
 
 router.post(
-  '/create-product',
+  '/create-product/:shopId',
   upload.array('files', 10),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
     next();
   },
-  auth(USER_ROLE.seller),
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller),
   validateRequest(ProductValidation.createProductValidationSchema),
   ProductController.createProductIntoDB,
 );

@@ -110,6 +110,10 @@ const ProductSchema = new Schema<TProduct>(
       type: Boolean,
       default: true,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
     shop: {
       type: Schema.Types.ObjectId,
       ref: 'Shop',
