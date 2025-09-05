@@ -24,4 +24,6 @@ const validateProduct = async (productId: string, quantity: number) => {
   return product;
 };
 
-const addItemToCart = async (userId: string, item: TItems) => {};
+const addItemToCart = async (userId: string, item: TItems) => {
+  console.log(userId)
+};
