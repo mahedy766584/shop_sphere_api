@@ -47,6 +47,7 @@ export const ErrorMessages = {
       'The requested resource could not be found. Please verify your request and try again.',
     DELETED: 'This product is not available for purchase.',
     AVAILABLE: (field: string | number) => `Only ${field} items are available for this product.`,
+    QUANTITY_EXCEEDS: (stock: number) => `Quantity exceeds available stock (${stock}).`,
   },
 
   SHOP: {

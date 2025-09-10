@@ -40,6 +40,12 @@ export const SuccessMessages = {
     LIST_FETCHED: 'All products retrieved successfully.',
   },
 
+  CART: {
+    ADDED: 'Add item to cart successfully',
+    ITEM_REMOVE: 'Item removed from cart successfully',
+    ITEM_UPDATE: 'Cart item updated successfully',
+  },
+
   ORDER: {
     CREATED: 'Order created successfully.',
     UPDATED: 'Order updated successfully.',

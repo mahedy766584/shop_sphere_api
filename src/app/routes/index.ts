@@ -1,3 +1,4 @@
+import { CartRoutes } from '@modules/cart/cart.route.js';
 import { ProductRoutes } from '@modules/products/products.route.js';
 import { SellerProfileRoutes } from '@modules/seller/seller.route.js';
 import { ShopRoutes } from '@modules/shop/shop.route.js';
@@ -28,6 +29,10 @@ const moduleRoutes = [
   {
     path: '/shops',
     route: ShopRoutes,
+  },
+  {
+    path: '/carts',
+    route: CartRoutes,
   },
 ];
 

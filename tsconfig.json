@@ -38,11 +38,15 @@
       ],
       "@interface/*":[
         "app/interface/*"
-      ]
+      ],
+      "redlock": ["interface/redlock.d.ts"]
     },
-    /* Interop & ES Module Support */
+
+     /* Interop & ES Module Support */
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+
+    /* Interop & ES Module Support */
     "forceConsistentCasingInFileNames": true,
     /* Type Checking */
     "strict": true,
@@ -50,7 +54,8 @@
     "resolveJsonModule": true
   },
   "include": [
-    "src"
+    "src",
+    "src/interface"
   ],
   "exclude": [
     "node_modules",

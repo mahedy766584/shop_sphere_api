@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 const objectIdRegex = /^[0-9a-fA-F]{24}$/;
-
 const objectId = z.string().refine((val) => objectIdRegex.test(val), {
   message: 'Invalid MongoDB ObjectId',
 });
@@ -9,17 +8,27 @@ const objectId = z.string().refine((val) => objectIdRegex.test(val), {
 const itemSchema = z.object({
   product: objectId,
   quantity: z.number().int().min(1, 'Quantity must be at least 1'),
-  priceAtAddTime: z.number().min(0, 'Price cannot be negative'),
 });
 
-const createCartValidationSchema = z.object({
+const addCartValidationSchema = z.object({
   body: z.object({
-    user: objectId,
-    items: z.array(itemSchema).min(1, 'Cart must have at least one item'),
-    totalAmount: z.number().min(0, 'Total amount cannot be negative'),
+    items: z
+      .union([itemSchema, z.array(itemSchema)])
+      .refine(
+        (val) => (Array.isArray(val) ? val.length > 0 : true),
+        'Cart must have at least one item',
+      ),
+  }),
+});
+
+const removeItemCartQuantityValidationSchema = z.object({
+  body: z.object({
+    productId: objectId,
+    quantity: z.number().int().min(1, 'Quantity must be at least 1'),
   }),
 });
 
 export const CartValidation = {
-  createCartValidationSchema,
+  addCartValidationSchema,
+  removeItemCartQuantityValidationSchema,
 };
