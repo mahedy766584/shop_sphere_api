@@ -28,4 +28,16 @@ router.delete(
   CartController.removeItemFromCart,
 );
 
+router.get(
+  '/',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.customer),
+  CartController.getMyCart,
+);
+
+router.delete(
+  '/clear',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.customer),
+  CartController.clearCart,
+);
+
 export const CartRoutes = router;

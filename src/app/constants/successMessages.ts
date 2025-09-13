@@ -44,6 +44,8 @@ export const SuccessMessages = {
     ADDED: 'Add item to cart successfully',
     ITEM_REMOVE: 'Item removed from cart successfully',
     ITEM_UPDATE: 'Cart item updated successfully',
+    CART_RETRIEVED: 'Cart is retrieved successfully',
+    CART_CLEAR: 'Cart is clear successfully',
   },
 
   ORDER: {

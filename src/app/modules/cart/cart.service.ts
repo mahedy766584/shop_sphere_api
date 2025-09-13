@@ -132,8 +132,22 @@ const removeItemFromCart = async (userId: string, productId: string) => {
   return removeItemCartQuantity(userId, productId, 0);
 };
 
+const getMyCart = async (userId: string) => {
+  return await Cart.findOne({ user: userId }).populate('items.product');
+};
+
+const clearCart = async (userId: string) => {
+  return await Cart.findOneAndUpdate(
+    { user: userId },
+    { $set: { items: [], totalAmount: 0 } },
+    { new: true },
+  );
+};
+
 export const CartService = {
   addItemToCart,
   removeItemCartQuantity,
   removeItemFromCart,
+  getMyCart,
+  clearCart,
 };

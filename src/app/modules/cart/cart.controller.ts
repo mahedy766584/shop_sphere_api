@@ -51,8 +51,32 @@ const removeItemFromCart = catchAsync(async (req, res) => {
   });
 });
 
+const getMyCart = catchAsync(async (req, res) => {
+  const { userId } = req.user;
+  const result = await CartService.getMyCart(userId);
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: SuccessMessages.CART.CART_RETRIEVED,
+    data: result,
+  });
+});
+
+const clearCart = catchAsync(async (req, res) => {
+  const { userId } = req.user;
+  const result = await CartService.clearCart(userId);
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: SuccessMessages.CART.CART_CLEAR,
+    data: result,
+  });
+});
+
 export const CartController = {
   addItemToCart,
   removeItemCartQuantity,
   removeItemFromCart,
+  getMyCart,
+  clearCart,
 };

@@ -1,4 +1,5 @@
 import { CartRoutes } from '@modules/cart/cart.route.js';
+import { OrderRoutes } from '@modules/order/order.route.js';
 import { ProductRoutes } from '@modules/products/products.route.js';
 import { SellerProfileRoutes } from '@modules/seller/seller.route.js';
 import { ShopRoutes } from '@modules/shop/shop.route.js';
@@ -33,6 +34,10 @@ const moduleRoutes = [
   {
     path: '/carts',
     route: CartRoutes,
+  },
+  {
+    path: '/orders',
+    route: OrderRoutes,
   },
 ];
 
