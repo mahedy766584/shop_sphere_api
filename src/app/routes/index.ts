@@ -1,6 +1,8 @@
 import { CartRoutes } from '@modules/cart/cart.route.js';
+import { ProductDiscountRoutes } from '@modules/discount/discount.route.js';
 import { OrderRoutes } from '@modules/order/order.route.js';
 import { ProductRoutes } from '@modules/products/products.route.js';
+import { ReviewRoutes } from '@modules/review/review.route.js';
 import { SellerProfileRoutes } from '@modules/seller/seller.route.js';
 import { ShopRoutes } from '@modules/shop/shop.route.js';
 import { AuthRoutes } from 'app/modules/Auth/auth.route.js';
@@ -38,6 +40,14 @@ const moduleRoutes = [
   {
     path: '/orders',
     route: OrderRoutes,
+  },
+  {
+    path: '/reviews',
+    route: ReviewRoutes,
+  },
+  {
+    path: '/discounts',
+    route: ProductDiscountRoutes,
   },
 ];
 

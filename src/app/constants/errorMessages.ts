@@ -38,6 +38,10 @@ export const ErrorMessages = {
     NOT_VERIFIED: 'Your seller account is not verified to create products',
   },
 
+  REVIEW: {
+    REVIEWED: 'You have already reviewed this product',
+  },
+
   PRODUCT: {
     PRODUCT_NAME_BRAND_EXIST: 'Product with this name and brand already exists.',
     DISCOUNT: 'Discount cannot exceed 50% of original price.',
@@ -59,6 +63,10 @@ export const ErrorMessages = {
     UPDATE_FAILED: 'Failed to update the shop information.',
     DELETE_FAILED: 'Failed to delete the shop.',
     NOT_OWNER: 'You are not the owner of this shop',
+  },
+
+  DISCOUNT: {
+    NOT_FOUND: 'Discount not found',
   },
 
   VALIDATION: {
