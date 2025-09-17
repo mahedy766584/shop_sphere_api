@@ -1,4 +1,5 @@
 import { CartRoutes } from '@modules/cart/cart.route.js';
+import { CouponRoutes } from '@modules/coupon/coupon.route.js';
 import { ProductDiscountRoutes } from '@modules/discount/discount.route.js';
 import { OrderRoutes } from '@modules/order/order.route.js';
 import { ProductRoutes } from '@modules/products/products.route.js';
@@ -48,6 +49,10 @@ const moduleRoutes = [
   {
     path: '/discounts',
     route: ProductDiscountRoutes,
+  },
+  {
+    path: '/coupons',
+    route: CouponRoutes,
   },
 ];
 
