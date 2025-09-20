@@ -16,6 +16,7 @@ export const ErrorMessages = {
 
   USER: {
     ALREADY_EXISTS: 'A user with this email already exists.',
+    NOT_EXISTS: 'A user with this email not exists.',
     INVALID_INPUT: 'Invalid user input. Please check the data and try again.',
     NOT_FOUND: 'The requested user account was not found in our system.',
     INACTIVE: 'This user account is inactive.',
@@ -26,6 +27,7 @@ export const ErrorMessages = {
     SUSPENDED: 'Your account is currently suspended. Please contact support for assistance.',
     EMAIL_VERIFICATION_REQUIRED: 'Please verify your email first to continue.',
     USERNAME_EXIST: 'User already exists with this user name',
+    NOT_ALLOWED: 'You are not allowed to update this user',
   },
 
   SELLER: {

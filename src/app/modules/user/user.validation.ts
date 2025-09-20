@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-// Name Validation
 const nameValidationSchema = z.object({
   firstName: z
     .string()
@@ -17,7 +16,6 @@ const nameValidationSchema = z.object({
     .trim(),
 });
 
-// Address Validation
 const addressValidationSchema = z.object({
   type: z.enum(['home', 'office', 'other']),
   street: z.string().trim(),
@@ -27,8 +25,7 @@ const addressValidationSchema = z.object({
   isDefault: z.boolean().default(false),
 });
 
-// User Validation
-export const userValidationSchema = z.object({
+const createUserValidationSchema = z.object({
   body: z.object({
     name: nameValidationSchema,
     userName: z
@@ -56,6 +53,41 @@ export const userValidationSchema = z.object({
   }),
 });
 
+const updateUserValidationSchema = z.object({
+  body: z.object({
+    name: nameValidationSchema.optional(),
+    userName: z
+      .string()
+      .min(4, 'Username must be at least 4 characters')
+      .max(30, 'Username must not exceed 30 characters')
+      .toLowerCase()
+      .trim()
+      .optional(),
+    password: z
+      .string()
+      .min(6, 'Password must be at least 6 characters')
+      .max(8, 'Password must not exceed 8 characters')
+      .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+      .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+      .regex(/[0-9]/, 'Password must contain at least one number')
+      .regex(/[\W_]/, 'Password must contain at least one special character')
+      .optional(),
+    email: z
+      .email({ message: 'Please provide a valid email address' })
+      .toLowerCase()
+      .trim()
+      .optional(),
+    role: z.enum(['superAdmin', 'admin', 'seller', 'customer']).default('customer').optional(),
+    phone: z
+      .string()
+      .regex(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number')
+      .optional(),
+    address: addressValidationSchema.optional(),
+    profileImage: z.url('Profile image must be a valid URL').default('https://ibb.co/jkx7zn2'),
+  }),
+});
+
 export const UserValidation = {
-  userValidationSchema,
+  createUserValidationSchema,
+  updateUserValidationSchema,
 };

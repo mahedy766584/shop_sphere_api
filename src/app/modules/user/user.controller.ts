@@ -1,3 +1,4 @@
+import type { TJwtPayload } from '@interface/index.js';
 import status from 'http-status';
 
 import catchAsync from '../../utils/catchAsync.js';
@@ -35,8 +36,34 @@ const getSingleUserFromDB = catchAsync(async (req, res) => {
   });
 });
 
+const updateSingleUser = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const authUser = req.user as TJwtPayload;
+  const result = await UserService.updateSingleUser(id, authUser, req.body);
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'User is updated successfully',
+    data: result,
+  });
+});
+
+const getMyProfile = catchAsync(async (req, res) => {
+  const authUser = req.user as TJwtPayload;
+  const result = await UserService.getMyProfile(authUser);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Profile fetched successfully',
+    data: result,
+  });
+});
+
 export const UserController = {
   createUserIntoDB,
   getAllUserFromDB,
   getSingleUserFromDB,
+  updateSingleUser,
+  getMyProfile,
 };

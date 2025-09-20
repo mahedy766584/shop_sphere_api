@@ -1,9 +1,11 @@
+import auth from '@middlewares/auth.js';
 import validateRequest from '@middlewares/validateRequest.js';
 import type { NextFunction, Request, Response } from 'express';
 import { Router } from 'express';
 
 import { upload } from '@utils/sendImageToCloudinary.js';
 
+import { USER_ROLE } from './user.constant.js';
 import { UserController } from './user.controller.js';
 import { UserValidation } from './user.validation.js';
 
@@ -16,12 +18,25 @@ router.post(
     req.body = JSON.parse(req.body.data);
     next();
   },
-  validateRequest(UserValidation.userValidationSchema),
+  validateRequest(UserValidation.createUserValidationSchema),
   UserController.createUserIntoDB,
 );
 
-router.get('/', UserController.getAllUserFromDB);
+router.get('/', auth(USER_ROLE.superAdmin, USER_ROLE.admin), UserController.getAllUserFromDB);
 
-router.get('/:id', UserController.getSingleUserFromDB);
+router.get(
+  '/get-me',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.customer, USER_ROLE.seller),
+  UserController.getMyProfile,
+);
+
+router.get('/:id', auth(USER_ROLE.superAdmin, USER_ROLE.admin), UserController.getSingleUserFromDB);
+
+router.patch(
+  '/:id',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.customer, USER_ROLE.seller),
+  validateRequest(UserValidation.updateUserValidationSchema),
+  UserController.updateSingleUser,
+);
 
 export const UserRoutes = router;
