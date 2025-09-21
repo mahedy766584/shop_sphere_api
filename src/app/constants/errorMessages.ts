@@ -30,6 +30,14 @@ export const ErrorMessages = {
     NOT_ALLOWED: 'You are not allowed to update this user',
   },
 
+  CATEGORY: {
+    EXISTING: 'This category is already exist!',
+    NOT_EXIST: 'This category does not exist!',
+    CANNOT_PARENT: 'A category cannot be its own parent!',
+    PARENT_NOT_EXIST: 'Parent category does not exist!',
+    CANNOT_DELETE: 'Cannot delete category with child categories!',
+  },
+
   SELLER: {
     ONLY_CUSTOMER_CAN_APPLY: 'Only customers can apply to become sellers',
     ALREADY_PENDING: 'Your seller application is already pending',

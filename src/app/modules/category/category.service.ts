@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import status from 'http-status';
 
+import { ErrorMessages } from '@constants/errorMessages.js';
+
 import AppError from '@errors/appError.js';
 
 import type { TCategory } from './category.interface.js';
@@ -9,7 +11,7 @@ import { Category } from './category.model.js';
 const createCategoryIntoDB = async (payload: TCategory) => {
   const category = await Category.findOne({ name: payload.name });
   if (category) {
-    throw new AppError(status.BAD_REQUEST, 'This category is already exist!');
+    throw new AppError(status.BAD_REQUEST, ErrorMessages.CATEGORY.EXISTING);
   }
   const result = (await Category.create(payload)).populate('parent');
   return result;
@@ -85,15 +87,15 @@ const buildCategoryTree = async () => {
 const updateSingleCategory = async (id: string, payload: Partial<TCategory>) => {
   const category = await Category.findById(id);
   if (!category) {
-    throw new AppError(status.BAD_REQUEST, 'This category does not exist!');
+    throw new AppError(status.BAD_REQUEST, ErrorMessages.CATEGORY.NOT_EXIST);
   }
   if (payload.parent && payload.parent.toString() !== id) {
-    throw new AppError(status.BAD_REQUEST, 'A category cannot be its own parent!');
+    throw new AppError(status.BAD_REQUEST, ErrorMessages.CATEGORY.CANNOT_PARENT);
   }
   if (payload.parent) {
     const parentCategory = await Category.findById(payload.parent);
     if (!parentCategory) {
-      throw new AppError(status.BAD_REQUEST, 'Parent category does not exist!');
+      throw new AppError(status.BAD_REQUEST, ErrorMessages.CATEGORY.PARENT_NOT_EXIST);
     }
   }
   const result = await Category.findByIdAndUpdate(id, payload, { new: true, runValidators: true });
@@ -103,7 +105,7 @@ const updateSingleCategory = async (id: string, payload: Partial<TCategory>) => 
 const toggleCategoryStatus = async (id: string) => {
   const category = await Category.findById(id);
   if (!category) {
-    throw new AppError(status.BAD_REQUEST, 'Category does not exist!');
+    throw new AppError(status.BAD_REQUEST, ErrorMessages.CATEGORY.NOT_EXIST);
   }
   category.isActive = !category.isActive;
   await category.save();
@@ -113,12 +115,12 @@ const toggleCategoryStatus = async (id: string) => {
 const deleteCategory = async (id: string) => {
   const category = await Category.findById(id);
   if (!category) {
-    throw new AppError(status.BAD_REQUEST, 'This category does not exist!');
+    throw new AppError(status.BAD_REQUEST, ErrorMessages.CATEGORY.NOT_EXIST);
   }
 
   const child = await Category.findOne({ parent: id });
   if (child) {
-    throw new AppError(status.BAD_REQUEST, 'Cannot delete category with child categories!');
+    throw new AppError(status.BAD_REQUEST, ErrorMessages.CATEGORY.CANNOT_DELETE);
   }
 
   const result = await Category.findByIdAndDelete(id);
