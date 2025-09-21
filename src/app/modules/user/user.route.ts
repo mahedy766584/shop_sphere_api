@@ -33,6 +33,13 @@ router.get(
 router.get('/:id', auth(USER_ROLE.superAdmin, USER_ROLE.admin), UserController.getSingleUserFromDB);
 
 router.patch(
+  '/my-profile',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.customer, USER_ROLE.seller),
+  validateRequest(UserValidation.updateUserValidationSchema),
+  UserController.updateMyProfile,
+);
+
+router.patch(
   '/:id',
   auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.customer, USER_ROLE.seller),
   validateRequest(UserValidation.updateUserValidationSchema),

@@ -1,4 +1,5 @@
 import { CartRoutes } from '@modules/cart/cart.route.js';
+import { CategoryRoutes } from '@modules/category/category.route.js';
 import { CouponRoutes } from '@modules/coupon/coupon.route.js';
 import { ProductDiscountRoutes } from '@modules/discount/discount.route.js';
 import { NotificationRoutes } from '@modules/notification/notification.route.js';
@@ -58,6 +59,10 @@ const moduleRoutes = [
   {
     path: '/notifications',
     route: NotificationRoutes,
+  },
+  {
+    path: '/categories',
+    route: CategoryRoutes,
   },
 ];
 

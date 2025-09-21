@@ -60,10 +60,22 @@ const getMyProfile = catchAsync(async (req, res) => {
   });
 });
 
+const updateMyProfile = catchAsync(async (req, res) => {
+  const authUser = req.user as TJwtPayload;
+  const result = await UserService.updateMyProfile(authUser, req.body);
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Profile updated successfully',
+    data: result,
+  });
+});
+
 export const UserController = {
   createUserIntoDB,
   getAllUserFromDB,
   getSingleUserFromDB,
   updateSingleUser,
   getMyProfile,
+  updateMyProfile,
 };

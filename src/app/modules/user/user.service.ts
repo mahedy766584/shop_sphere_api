@@ -52,6 +52,10 @@ const getSingleUserFromDB = async (id: string) => {
   return result;
 };
 
+const updateMyProfile = async (authUser: TJwtPayload, payload: Partial<TUser>) => {
+  return updateSingleUser(authUser.userId, authUser, payload);
+};
+
 const updateSingleUser = async (userId: string, authUser: TJwtPayload, payload: Partial<TUser>) => {
   const userExist = await User.findById(userId);
   if (!userExist) {
@@ -113,4 +117,5 @@ export const UserService = {
   getSingleUserFromDB,
   updateSingleUser,
   getMyProfile,
+  updateMyProfile,
 };
