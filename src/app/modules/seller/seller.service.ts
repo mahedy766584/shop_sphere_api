@@ -1,4 +1,5 @@
 import { User } from '@modules/user/user.model.js';
+import QueryBuilder from 'app/builder/QueryBuilder.js';
 import status from 'http-status';
 import mongoose from 'mongoose';
 
@@ -7,7 +8,7 @@ import { ErrorMessages } from '@constants/errorMessages.js';
 import AppError from '@errors/appError.js';
 
 import type { TStatus } from './seller.constant.js';
-import { allowedFields } from './seller.constant.js';
+import { allowedFields, sellerSearchableFields } from './seller.constant.js';
 import type { TSellerProfile } from './seller.interface.js';
 import { SellerProfile } from './seller.model.js';
 
@@ -91,9 +92,64 @@ const updateSellerStatusIntoDB = async (sellerId: string, newStatus: TStatus) =>
   }
 };
 
-const getAllSellerFromDB = async () => {
-  const result = await SellerProfile.find().populate('user', 'name email role');
-  return result;
+const getAllSellerFromDB = async (query: Record<string, unknown>) => {
+  const sellerProfileQuery = new QueryBuilder(
+    SellerProfile.find().populate('user', 'name email role'),
+    query,
+  )
+    .search(sellerSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await sellerProfileQuery.modelQuery;
+  const meta = await sellerProfileQuery.countTotal();
+  return {
+    result,
+    meta,
+  };
+};
+
+const getMySellerProfileFromDB = async (userId: string) => {
+  const seller = await SellerProfile.findOne({ user: userId }).populate(
+    'user',
+    'name email role profileImage phone userName isEmailVerified',
+  );
+  if (!seller) {
+    throw new AppError(status.NOT_FOUND, ErrorMessages.SELLER.NOT_FOUND);
+  }
+  return seller;
+};
+
+const deleteMySellerProfileFromDB = async (userId: string) => {
+  const seller = await SellerProfile.findOneAndUpdate(
+    { user: userId },
+    { $set: { isDeleted: true, status: 'suspended' } },
+    { new: true },
+  );
+  if (!seller) {
+    throw new AppError(status.NOT_FOUND, ErrorMessages.SELLER.NOT_FOUND);
+  }
+  return seller;
+};
+
+const reApplyForSellerIntoDB = async (userId: string, payload: TSellerProfile) => {
+  const seller = await SellerProfile.findOne({ user: userId });
+  if (!seller) {
+    throw new AppError(status.NOT_FOUND, ErrorMessages.SELLER.NOT_FOUND);
+  }
+
+  if (seller.status !== 'rejected') {
+    throw new AppError(status.BAD_REQUEST, 'Only rejected sellers can re-apply');
+  }
+
+  seller.status = 'pending';
+  seller.isVerified = false;
+  Object.assign(seller, payload);
+  await seller.save();
+
+  return seller;
 };
 
 export const SellerProfileService = {
@@ -101,4 +157,7 @@ export const SellerProfileService = {
   updateMySellerProfileIntoDB,
   updateSellerStatusIntoDB,
   getAllSellerFromDB,
+  getMySellerProfileFromDB,
+  deleteMySellerProfileFromDB,
+  reApplyForSellerIntoDB,
 };

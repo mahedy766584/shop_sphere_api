@@ -43,11 +43,45 @@ const updateSellerStatusIntoDB = catchAsync(async (req, res) => {
 });
 
 const getAllSellerFromDB = catchAsync(async (req, res) => {
-  const result = await SellerProfileService.getAllSellerFromDB();
+  const result = await SellerProfileService.getAllSellerFromDB(req.query);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
     message: SuccessMessages.SELLER.RETRIEVED,
+    meta: result.meta,
+    data: result.result,
+  });
+});
+
+const getMySellerProfileFromDB = catchAsync(async (req, res) => {
+  const { userId } = req.user;
+  const result = await SellerProfileService.getMySellerProfileFromDB(userId);
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: SuccessMessages.SELLER.S_P_RETRIEVED,
+    data: result,
+  });
+});
+
+const deleteMySellerProfileFromDB = catchAsync(async (req, res) => {
+  const { userId } = req.user;
+  const result = await SellerProfileService.deleteMySellerProfileFromDB(userId);
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Seller si deleted successfully',
+    data: result,
+  });
+});
+
+const reApplyForSellerIntoDB = catchAsync(async (req, res) => {
+  const { userId } = req.user;
+  const result = await SellerProfileService.reApplyForSellerIntoDB(userId, req.body);
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Re apply for seller successfully',
     data: result,
   });
 });
@@ -57,4 +91,7 @@ export const SellerProfileController = {
   updateMySellerProfileIntoDB,
   updateSellerStatusIntoDB,
   getAllSellerFromDB,
+  getMySellerProfileFromDB,
+  deleteMySellerProfileFromDB,
+  reApplyForSellerIntoDB,
 };

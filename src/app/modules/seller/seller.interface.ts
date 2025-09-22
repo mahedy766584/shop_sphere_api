@@ -6,6 +6,7 @@ export type TSellerProfile = {
   tradeLicense: string;
   bankAccount: string;
   documents?: string[];
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'pending' | 'approved' | 'rejected' | 'suspended';
+  isDeleted: boolean;
   isVerified: boolean;
 };

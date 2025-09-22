@@ -23,6 +23,7 @@ export const SuccessMessages = {
     UPDATED: 'Seller profile updated successfully',
     UPDATED_STATUS: 'Seller status updated successfully',
     RETRIEVED: 'All seller is retrieved successfully.',
+    S_P_RETRIEVED: 'Seller profile is retrieved successfully',
   },
 
   SHOP: {
