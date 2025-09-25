@@ -20,7 +20,8 @@ const createShopIntoDB = catchAsync(async (req, res) => {
 
 const updateMyShopIntoDB = catchAsync(async (req, res) => {
   const { shopId } = req.params;
-  const result = await ShopService.updateMyShopIntoDB(shopId, req.body);
+  const { userId } = req.user;
+  const result = await ShopService.updateMyShopIntoDB(userId, shopId, req.body);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
@@ -32,7 +33,8 @@ const updateMyShopIntoDB = catchAsync(async (req, res) => {
 const verifyShopIntoDB = catchAsync(async (req, res) => {
   const { shopId } = req.params;
   const { isVerified } = req.body;
-  const result = await ShopService.verifyShopIntoDB(shopId, isVerified);
+  const { userId } = req.user;
+  const result = await ShopService.verifyShopIntoDB(shopId, isVerified, userId);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,

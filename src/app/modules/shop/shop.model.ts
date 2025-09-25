@@ -8,6 +8,7 @@ const shopeSchema = new Schema<TShop>(
       type: String,
       required: [true, 'Shop name is required'],
       trim: true,
+      unique: true,
       minlength: [3, 'Shop name must be at least 3 characters long'],
       maxlength: [100, 'Shop name must not exceed 100 characters'],
     },
@@ -29,6 +30,14 @@ const shopeSchema = new Schema<TShop>(
       type: Schema.Types.ObjectId,
       ref: 'SellerProfile',
       required: [true, 'Shop owner is required'],
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
   {

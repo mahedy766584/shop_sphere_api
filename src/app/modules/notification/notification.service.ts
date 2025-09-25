@@ -1,46 +1,126 @@
-import status from 'http-status';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import QueryBuilder from 'app/builder/QueryBuilder.js';
+import type { ClientSession, Types } from 'mongoose';
 
-import AppError from '@errors/appError.js';
-
-import { DEDUPE_WINDOW_MS } from './notification.constant.js';
 import type { TNotification } from './notification.interface.js';
 import { Notification } from './notification.model.js';
 
-const createNotificationIntoDB = async (
-  userId: string,
-  payload: Partial<TNotification>,
-  systemTriggered: boolean,
-): Promise<TNotification> => {
-  if (!userId && !systemTriggered) {
-    throw new AppError(status.BAD_REQUEST, 'UserId is required for normal notifications');
-  }
-
-  const finalUserId = userId || payload.user;
-  if (!finalUserId) {
-    throw new AppError(status.BAD_REQUEST, 'Cannot create notification without userId');
-  }
-
-  if (payload.dedupeKey) {
-    const existing = await Notification.findOne({
-      dedupeKey: payload.dedupeKey,
-      user: finalUserId,
-      isDeleted: false,
-      createdAt: { $gte: new Date(Date.now() - DEDUPE_WINDOW_MS) },
+class NotificationService {
+  static async create(
+    data: Omit<TNotification, 'readAt' | 'createdAt' | 'updatedAt'>,
+    options?: { session?: ClientSession },
+  ) {
+    return Notification.create([{ ...data, isRead: false, readAt: undefined }], {
+      session: options?.session,
     });
-    if (existing) throw new AppError(status.BAD_REQUEST, 'Notification already exist!');
   }
 
-  if (!payload.channels) {
-    if (payload.type === 'order') payload.channels = ['in_app', 'push', 'email'];
-    else if (payload.type === 'promotion') payload.channels = ['push', 'email'];
-    else payload.channels = ['in_app'];
+  static async createForUser(
+    params: {
+      user: Types.ObjectId | string;
+      type: TNotification['type'];
+      title?: string;
+      message: string;
+      channels?: TNotification['channels'];
+      metadata?: Record<string, any>;
+      locale?: string;
+      priority?: TNotification['priority'];
+      dedupeKey?: string;
+    },
+    options?: { session?: ClientSession },
+  ) {
+    const {
+      user,
+      type,
+      title,
+      message,
+      channels = ['in_app'],
+      metadata,
+      locale = 'en',
+      priority = 'normal',
+      dedupeKey,
+    } = params;
+
+    return Notification.create(
+      [
+        {
+          user,
+          type,
+          title,
+          message,
+          channels,
+          metadata: metadata ?? {},
+          locale,
+          priority,
+          dedupeKey,
+          isRead: false,
+          readAt: undefined,
+          isDeleted: false,
+        },
+      ],
+      { session: options?.session },
+    );
   }
 
-  const result = await Notification.create(payload);
+  // 🔹 fetch all user notifications (with QueryBuilder)
+  static async findAllByUser(
+    userId: string | Types.ObjectId,
+    query: Record<string, unknown>, // req.query আসবে controller থেকে
+  ) {
+    // base filter
+    const filter: any = { user: userId, isDeleted: false };
+    if (query.unreadOnly === 'true') filter.isRead = false;
 
-  return result;
-};
+    // 🔹 base mongoose query
+    const notificationQuery = Notification.find(filter);
 
-export const NotificationService = {
-  createNotificationIntoDB,
-};
+    // 🔹 apply query builder
+    const notificationQueryBuilder = new QueryBuilder(notificationQuery, query)
+      .search(['title', 'message']) // searchable fields
+      .filter()
+      .sort()
+      .paginate()
+      .fields();
+
+    // execute query
+    const result = await notificationQueryBuilder.modelQuery.lean();
+
+    // pagination meta
+    const meta = await notificationQueryBuilder.countTotal();
+
+    return { meta, result };
+  }
+
+  // 🔹 mark as read
+  static async markAsRead(notificationId: string, userId: string) {
+    return Notification.findOneAndUpdate(
+      { _id: notificationId, user: userId },
+      { $set: { isRead: true, readAt: new Date() } },
+      { new: true },
+    );
+  }
+
+  // 🔹 mark all read
+  static async markAllAsRead(userId: string) {
+    return Notification.updateMany(
+      { user: userId, isRead: false },
+      { $set: { isRead: true, readAt: new Date() } },
+    );
+  }
+
+  // 🔹 delete notification (soft delete)
+  static async softDelete(notificationId: string, userId: string) {
+    return Notification.findOneAndUpdate(
+      { _id: notificationId, user: userId },
+      { $set: { isDeleted: true } },
+      { new: true },
+    );
+  }
+
+  // 🔹 prune old notifications
+  static async pruneOlderThan(date: Date) {
+    return Notification.deleteMany({ createdAt: { $lt: date } });
+  }
+}
+
+export default NotificationService;

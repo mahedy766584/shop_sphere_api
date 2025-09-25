@@ -2,7 +2,6 @@ import { CartRoutes } from '@modules/cart/cart.route.js';
 import { CategoryRoutes } from '@modules/category/category.route.js';
 import { CouponRoutes } from '@modules/coupon/coupon.route.js';
 import { ProductDiscountRoutes } from '@modules/discount/discount.route.js';
-import { NotificationRoutes } from '@modules/notification/notification.route.js';
 import { OrderRoutes } from '@modules/order/order.route.js';
 import { ProductRoutes } from '@modules/products/products.route.js';
 import { ReviewRoutes } from '@modules/review/review.route.js';
@@ -55,10 +54,6 @@ const moduleRoutes = [
   {
     path: '/coupons',
     route: CouponRoutes,
-  },
-  {
-    path: '/notifications',
-    route: NotificationRoutes,
   },
   {
     path: '/categories',
