@@ -1,6 +1,7 @@
 import AuditService from '@modules/auditLog/auditLog.service.js';
 // import { NotificationService } from '@modules/notification/notification.service.js';
 import NotificationService from '@modules/notification/notification.service.js';
+import { Product } from '@modules/products/products.model.js';
 import { SellerProfile } from '@modules/seller/seller.model.js';
 import status from 'http-status';
 import type { Types } from 'mongoose';
@@ -27,9 +28,12 @@ const createShopIntoDB = async (userId: string, payload: TShop) => {
       throw new AppError(status.NOT_FOUND, ErrorMessages.SELLER.NOT_VERIFIED);
     }
 
-    const [newShop] = await Shop.create([{ ...payload, owner: seller?._id, isActive: false }], {
-      session,
-    });
+    const [newShop] = await Shop.create(
+      [{ ...payload, owner: userId, isActive: false, sellerProfile: seller?._id }],
+      {
+        session,
+      },
+    );
 
     if (!newShop) {
       throw new AppError(status.BAD_REQUEST, ErrorMessages.SHOP.UPDATE_FAILED);
@@ -142,21 +146,21 @@ const verifyShopIntoDB = async (
     );
 
     // 🔹 Notification create
-    if (isVerified) {
-      await NotificationService.createForUser(
-        {
-          user: shop.owner,
-          type: 'system',
-          title: 'Shop Verification',
-          message: 'Your shop has been successfully verified! 🎉',
-          channels: ['in_app'],
-          locale: 'en',
-          priority: 'normal',
-          dedupeKey: `shop-verify. name: ${shop.name}, id:${shop._id}`,
-        },
-        { session },
-      );
-    }
+    await NotificationService.createForUser(
+      {
+        user: shop.owner,
+        type: 'system',
+        title: isVerified ? 'Shop Verification' : 'Shop inactive',
+        message: isVerified
+          ? 'Your shop has been successfully verified🎉'
+          : 'Your shop has been successfully inactive',
+        channels: ['in_app'],
+        locale: 'en',
+        priority: 'normal',
+        dedupeKey: `shop-verify. name: ${shop.name}, id:${shop._id}`,
+      },
+      { session },
+    );
 
     await session.commitTransaction();
     await session.endSession();
@@ -197,10 +201,75 @@ const getShopAsOwner = async (sellerId: string) => {
   return owner;
 };
 
+const softDeleteShopIntoDB = async (shopId: string, sellerId: string) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const shop = await Shop.findOne({ _id: shopId, owner: sellerId }).session(session);
+    if (!shop) throw new AppError(status.NOT_FOUND, ErrorMessages.SHOP.NOT_FOUND);
+
+    if (shop.isDeleted) {
+      throw new AppError(status.BAD_REQUEST, 'Shop already deleted');
+    }
+
+    shop.isActive = false;
+    shop.isDeleted = true;
+    await shop.save({ session });
+
+    const product = await Product.updateMany(
+      { shop: shopId },
+      { $set: { isActive: false, isDeleted: true } },
+      { session },
+    );
+
+    if (!product) {
+      throw new AppError(status.NOT_FOUND, ErrorMessages.PRODUCT.NOT_FOUND);
+    }
+
+    await AuditService.createFromDocs(
+      {
+        resourceType: 'shop',
+        resourceId: shopId,
+        action: 'delete',
+        performedBy: sellerId,
+        previousData: null,
+        newData: shop.toObject(),
+        meta: null,
+      },
+      { session },
+    );
+
+    await NotificationService.createForUser(
+      {
+        user: shop.owner,
+        type: 'system',
+        title: 'Shop deleted',
+        message: `Your shop "${shop.name}" was deleted successfully`,
+        channels: ['in_app'],
+        locale: 'en',
+        priority: 'normal',
+        dedupeKey: `Shop deleted. name: ${shop.name}, id:${shop._id}`,
+      },
+      { session },
+    );
+
+    session.commitTransaction();
+
+    return shop;
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    await session.endSession();
+  }
+};
+
 export const ShopService = {
   createShopIntoDB,
   updateMyShopIntoDB,
   verifyShopIntoDB,
   getAllShop,
   getShopAsOwner,
+  softDeleteShopIntoDB,
 };

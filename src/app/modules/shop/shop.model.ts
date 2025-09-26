@@ -28,8 +28,12 @@ const shopeSchema = new Schema<TShop>(
     },
     owner: {
       type: Schema.Types.ObjectId,
-      ref: 'SellerProfile',
+      ref: 'User',
       required: [true, 'Shop owner is required'],
+    },
+    sellerProfile: {
+      type: Schema.Types.ObjectId,
+      ref: 'SellerProfile',
     },
     isActive: {
       type: Boolean,

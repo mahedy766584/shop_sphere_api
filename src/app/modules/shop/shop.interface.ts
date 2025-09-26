@@ -9,4 +9,5 @@ export type TShop = {
   isActive: boolean;
   isDeleted?: boolean;
   owner: Types.ObjectId;
+  sellerProfile: Types.ObjectId;
 };
