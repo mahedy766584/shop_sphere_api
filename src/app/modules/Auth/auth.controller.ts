@@ -7,8 +7,8 @@ import { SuccessMessages } from '@constants/successMessages.js';
 
 import AppError from '@errors/appError.js';
 
-import catchAsync from '@utils/catchAsync.js';
-import sendResponse from '@utils/sendResponse.js';
+import catchAsync from '@utils/async/catchAsync.js';
+import sendResponse from '@utils/common/sendResponse.js';
 
 import { AuthService } from './auth.service.js';
 

@@ -7,7 +7,7 @@ import { ErrorMessages } from '@constants/errorMessages.js';
 
 import AppError from '@errors/appError.js';
 
-import { sendEmail } from '@utils/sendEmail.js';
+import { sendEmail } from '@utils/communication/sendEmail.js';
 
 import { generateEmailVerificationToken, verifyEmailVerificationToken } from './auth.utils.js';
 

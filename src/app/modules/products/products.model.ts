@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Schema, model } from 'mongoose';
 
-import { slugPlugin } from '@utils/generateUniqSlug.js';
+import { slugPlugin } from '@utils/common/generateUniqSlug.js';
 
 import type { TAttributesProduct, TProduct } from './products.interface.js';
 

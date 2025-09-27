@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
 
-import { slugPlugin } from '@utils/generateUniqSlug.js';
+import { slugPlugin } from '@utils/common/generateUniqSlug.js';
 
 import type { TCategory } from './category.interface.js';
 

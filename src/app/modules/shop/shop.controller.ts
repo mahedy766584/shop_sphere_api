@@ -2,8 +2,8 @@ import status from 'http-status';
 
 import { SuccessMessages } from '@constants/successMessages.js';
 
-import catchAsync from '@utils/catchAsync.js';
-import sendResponse from '@utils/sendResponse.js';
+import catchAsync from '@utils/async/catchAsync.js';
+import sendResponse from '@utils/common/sendResponse.js';
 
 import { ShopService } from './shop.service.js';
 

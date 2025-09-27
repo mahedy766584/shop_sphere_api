@@ -4,7 +4,7 @@ import { USER_ROLE } from '@modules/user/user.constant.js';
 import type { NextFunction, Request, Response } from 'express';
 import { Router } from 'express';
 
-import { upload } from '@utils/sendImageToCloudinary.js';
+import { upload } from '@utils/file/sendImageToCloudinary.js';
 
 import { ProductController } from './products.controller.js';
 import { ProductValidation } from './products.validation.js';

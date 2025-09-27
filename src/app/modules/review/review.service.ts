@@ -7,7 +7,7 @@ import { ErrorMessages } from '@constants/errorMessages.js';
 
 import AppError from '@errors/appError.js';
 
-import { uploadImageToCloudinary } from '@utils/sendImageToCloudinary.js';
+import { uploadImageToCloudinary } from '@utils/file/sendImageToCloudinary.js';
 
 import type { TReview } from './review.interface.js';
 import { Review } from './review.model.js';

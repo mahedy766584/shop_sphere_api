@@ -3,7 +3,7 @@ import validateRequest from '@middlewares/validateRequest.js';
 import type { NextFunction, Request, Response } from 'express';
 import { Router } from 'express';
 
-import { upload } from '@utils/sendImageToCloudinary.js';
+import { upload } from '@utils/file/sendImageToCloudinary.js';
 
 import { USER_ROLE } from './user.constant.js';
 import { UserController } from './user.controller.js';

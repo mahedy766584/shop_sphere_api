@@ -8,7 +8,7 @@ import { ErrorMessages } from '@constants/errorMessages.js';
 
 import AppError from '@errors/appError.js';
 
-import { uploadImageToCloudinary } from '@utils/sendImageToCloudinary.js';
+import { uploadImageToCloudinary } from '@utils/file/sendImageToCloudinary.js';
 
 import type { TUser } from './user.interface.js';
 import { User } from './user.model.js';

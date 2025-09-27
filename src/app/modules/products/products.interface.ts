@@ -21,7 +21,7 @@ export type TProduct = {
   isFeatured: boolean;
   isActive: boolean;
   isDeleted: boolean;
-  shop: Types.ObjectId;
+  shop: Types.ObjectId | string;
   createdBy: Types.ObjectId;
   updatedBy?: Types.ObjectId;
   deletedBy?: Types.ObjectId;

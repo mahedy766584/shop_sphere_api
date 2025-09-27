@@ -14,7 +14,7 @@ import { ErrorMessages } from '@constants/errorMessages.js';
 
 import AppError from '@errors/appError.js';
 
-import catchAsync from '@utils/catchAsync.js';
+import catchAsync from '@utils/async/catchAsync.js';
 
 const auth = (...requiredRoles: TUserRole[]) => {
   return catchAsync(async (req, res, next) => {

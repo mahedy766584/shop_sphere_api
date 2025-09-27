@@ -9,7 +9,9 @@ import { ErrorMessages } from '@constants/errorMessages.js';
 
 import AppError from '@errors/appError.js';
 
-import { uploadImageToCloudinary } from '@utils/sendImageToCloudinary.js';
+import { uploadImageToCloudinary } from '@utils/file/sendImageToCloudinary.js';
+import { checkSellerProfile } from '@utils/guards/checkSellerProfile.js';
+import { checkUserStatus } from '@utils/guards/checkUserStatus.js';
 
 import { allowedAttributes } from './product.constant.js';
 import type { TProduct } from './products.interface.js';
@@ -25,15 +27,10 @@ const createProductIntoDB = async (
   session.startTransaction();
 
   try {
-    const userExist = await User.findById(userId).session(session);
-    if (!userExist) throw new AppError(status.NOT_FOUND, ErrorMessages.USER.NOT_FOUND);
-    if (userExist.isBanned) throw new AppError(status.FORBIDDEN, ErrorMessages.USER.BANNED);
-    if (userExist.isDeleted) throw new AppError(status.FORBIDDEN, ErrorMessages.USER.DELETED);
-
-    const seller = await SellerProfile.findOne({ user: userId }).session(session);
+    // ✅ reusable utility functions
+    const userExist = await checkUserStatus(userId, session);
+    const seller = await checkSellerProfile(userId, session);
     if (!seller) throw new AppError(status.FORBIDDEN, ErrorMessages.SELLER.NOT_FOUND);
-    if (!userExist.isEmailVerified)
-      throw new AppError(status.FORBIDDEN, ErrorMessages.SELLER.NOT_VERIFIED);
 
     const shop = await Shop.findById(shopId).session(session);
     if (!shop) throw new AppError(status.NOT_FOUND, ErrorMessages.SHOP.NOT_FOUND);

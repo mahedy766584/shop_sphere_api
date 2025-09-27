@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { ZodObject, ZodRawShape } from 'zod';
 
-import catchAsync from '../utils/catchAsync.js';
+import catchAsync from '../utils/async/catchAsync.js';
 
 const validateRequest = <T extends ZodObject<ZodRawShape>>(schema: T) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {

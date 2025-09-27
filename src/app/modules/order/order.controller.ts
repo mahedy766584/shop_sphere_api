@@ -1,7 +1,7 @@
 import status from 'http-status';
 
-import catchAsync from '@utils/catchAsync.js';
-import sendResponse from '@utils/sendResponse.js';
+import catchAsync from '@utils/async/catchAsync.js';
+import sendResponse from '@utils/common/sendResponse.js';
 
 import { OrderService } from './order.service.js';
 
