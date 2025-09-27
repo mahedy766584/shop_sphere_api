@@ -54,12 +54,24 @@ const getAllShop = catchAsync(async (req, res) => {
 });
 
 const getShopAsOwner = catchAsync(async (req, res) => {
-  const { sellerId } = req.params;
-  const result = await ShopService.getShopAsOwner(sellerId);
+  const { userId } = req.user;
+  const result = await ShopService.getShopAsOwner(userId);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
     message: SuccessMessages.SHOP.RETRIEVED,
+    data: result,
+  });
+});
+
+const softDeleteShopIntoDB = catchAsync(async (req, res) => {
+  const sellerId = req.user.userId;
+  const { shopId } = req.params;
+  const result = await ShopService.softDeleteShopIntoDB(sellerId, shopId);
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Your shop is deleted successfully',
     data: result,
   });
 });
@@ -70,4 +82,5 @@ export const ShopController = {
   verifyShopIntoDB,
   getAllShop,
   getShopAsOwner,
+  softDeleteShopIntoDB,
 };

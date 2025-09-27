@@ -29,10 +29,16 @@ router.patch(
   ShopController.verifyShopIntoDB,
 );
 
+router.delete(
+  '/:shopId',
+  auth(USER_ROLE.admin, USER_ROLE.superAdmin, USER_ROLE.seller),
+  ShopController.softDeleteShopIntoDB,
+);
+
 router.get('/', auth(USER_ROLE.superAdmin, USER_ROLE.admin), ShopController.getAllShop);
 
 router.get(
-  '/:sellerId/owner',
+  '/owner',
   auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller),
   ShopController.getShopAsOwner,
 );

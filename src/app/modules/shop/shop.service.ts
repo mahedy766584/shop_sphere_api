@@ -73,7 +73,10 @@ const updateMyShopIntoDB = async (userId: string, shopId: string, payload: Parti
       throw new AppError(status.BAD_REQUEST, ErrorMessages.SHOP.NOT_FOUND);
     }
 
-    const existingSeller = await SellerProfile.findOne({ _id: existingShop.owner });
+    const existingSeller = await SellerProfile.findOne({
+      _id: existingShop.sellerProfile,
+      user: userId,
+    });
     if (!existingSeller) {
       throw new AppError(status.BAD_REQUEST, ErrorMessages.SHOP.UPDATE_FAILED);
     }
@@ -94,15 +97,18 @@ const updateMyShopIntoDB = async (userId: string, shopId: string, payload: Parti
       throw new AppError(status.BAD_REQUEST, ErrorMessages.SHOP.UPDATE_FAILED);
     }
 
-    await AuditService.createFromDocs({
-      resourceType: 'Shop',
-      resourceId: result._id,
-      action: 'update',
-      performedBy: userId,
-      previousData: null,
-      newData: result.toObject(),
-      meta: null,
-    });
+    await AuditService.createFromDocs(
+      {
+        resourceType: 'Shop',
+        resourceId: result._id,
+        action: 'update',
+        performedBy: userId,
+        previousData: null,
+        newData: result.toObject(),
+        meta: null,
+      },
+      { session },
+    );
 
     await session.commitTransaction();
     await session.endSession();
@@ -125,9 +131,11 @@ const verifyShopIntoDB = async (
   session.startTransaction();
 
   try {
-    const shop = await Shop.findByIdAndUpdate(shopId, { isVerified }, { new: true }).session(
-      session,
-    );
+    const shop = await Shop.findByIdAndUpdate(
+      shopId,
+      { isVerified, isActive: true },
+      { new: true },
+    ).session(session);
     if (!shop) {
       throw new AppError(status.FORBIDDEN, ErrorMessages.SHOP.NOT_FOUND);
     }
@@ -176,7 +184,7 @@ const verifyShopIntoDB = async (
 
 const getAllShop = async () => {
   const result = await Shop.find().populate({
-    path: 'owner',
+    path: 'sellerProfile',
     populate: {
       path: 'user',
       model: 'User',
@@ -186,9 +194,9 @@ const getAllShop = async () => {
   return result;
 };
 
-const getShopAsOwner = async (sellerId: string) => {
-  const owner = await Shop.findOne({ owner: sellerId }).populate({
-    path: 'owner',
+const getShopAsOwner = async (userId: string) => {
+  const owner = await Shop.findOne({ owner: userId }).populate({
+    path: 'sellerProfile',
     populate: {
       path: 'user',
       model: 'User',
