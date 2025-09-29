@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { objectIdSchema } from '@utils/validators/objectIdValidator.js';
+
 // 🔹 Attribute Validation
 const attributeValidationSchema = z.object({
   key: z
@@ -37,7 +39,8 @@ const createProductValidationSchema = z
         .toLowerCase()
         .min(3, 'Slug must be at least 3 characters long')
         .max(120, 'Slug cannot exceed 120 characters')
-        .nonempty('Slug is required'),
+        .nonempty('Slug is required')
+        .optional(),
 
       description: z
         .string()
@@ -58,7 +61,7 @@ const createProductValidationSchema = z
 
       stock: z.number().nonnegative('Stock cannot be negative'),
 
-      images: z.array(z.string().trim()).nonempty('At least one image is required'),
+      images: z.array(z.string().trim()).nonempty('At least one image is required').optional(),
 
       brand: z
         .string()
@@ -66,6 +69,8 @@ const createProductValidationSchema = z
         .min(2, 'Brand name must be at least 2 characters long')
         .max(50, 'Brand name cannot exceed 50 characters')
         .optional(),
+
+      category: objectIdSchema.nonempty('Category is required'),
 
       attributes: z.array(attributeValidationSchema).optional(),
 
@@ -85,10 +90,120 @@ const createProductValidationSchema = z
     path: ['body', 'discountPrice'],
   });
 
-// 🔹 Update Product Validation (Partial)
-const updateProductValidationSchema = z.object({
-  body: createProductValidationSchema.shape.body.partial(),
-});
+const updateProductValidationSchema = z
+  .object({
+    // 🔹 Scalar fields
+    name: z
+      .string({
+        error: 'Product name is required',
+      })
+      .min(1, { message: 'Product name cannot be empty' })
+      .max(255, { message: 'Product name must not exceed 255 characters' })
+      .optional(),
+
+    description: z
+      .string({
+        error: 'Description must be a string',
+      })
+      .max(2000, { message: 'Description must not exceed 2000 characters' })
+      .optional(),
+
+    price: z
+      .number({
+        error: 'Price must be a number',
+      })
+      .positive({ message: 'Price must be greater than 0' })
+      .optional(),
+
+    discountPrice: z
+      .number({
+        error: 'Discount price must be a number',
+      })
+      .positive({ message: 'Discount price must be greater than 0' })
+      .optional(),
+
+    sku: z
+      .string({
+        error: 'SKU must be a string',
+      })
+      .optional(),
+
+    stock: z
+      .number({
+        error: 'Stock must be a number',
+      })
+      .int({ message: 'Stock must be an integer' })
+      .min(0, { message: 'Stock cannot be negative' })
+      .optional(),
+
+    brand: z
+      .string({
+        error: 'Brand must be a string',
+      })
+      .optional(),
+
+    isFeatured: z
+      .boolean({
+        error: 'isFeatured must be a boolean',
+      })
+      .optional(),
+
+    isActive: z
+      .boolean({
+        error: 'isActive must be a boolean',
+      })
+      .optional(),
+
+    category: objectIdSchema.nonempty('Category is required').optional(),
+
+    // 🔹 Attributes: add / update / remove
+    attributes: z
+      .object({
+        add: z
+          .array(
+            z.object({
+              key: z.string().min(1, { message: 'Attribute key cannot be empty' }),
+              value: z
+                .array(
+                  z.string().min(1, {
+                    message: 'Attribute value cannot be empty',
+                  }),
+                )
+                .min(1, { message: 'At least one value is required' }),
+            }),
+          )
+          .optional(),
+
+        update: z
+          .array(
+            z.object({
+              key: z.string().min(1, { message: 'Attribute key cannot be empty' }),
+              value: z
+                .array(
+                  z.string().min(1, {
+                    message: 'Attribute value cannot be empty',
+                  }),
+                )
+                .min(1, { message: 'At least one value is required' }),
+            }),
+          )
+          .optional(),
+
+        remove: z.array(z.string().min(1, { message: 'Attribute key cannot be empty' })).optional(),
+      })
+      .optional(),
+
+    // 🔹 Images: remove URLs only; uploads come via files (Multer)
+    images: z
+      .object({
+        remove: z.array(z.string().url({ message: 'Each image must be a valid URL' })).optional(),
+      })
+      .optional(),
+  })
+  .refine((data) => !(data.discountPrice && data.price && data.discountPrice >= data.price), {
+    message: 'Discount price must be less than the original price',
+    path: ['discountPrice'],
+  });
 
 export const ProductValidation = {
   createProductValidationSchema,

@@ -23,4 +23,30 @@ router.post(
   ProductController.createProductIntoDB,
 );
 
+router.get(
+  '/',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.customer),
+  ProductController.getAllProductsFromDB,
+);
+
+router.get(
+  '/:productId',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.customer),
+  ProductController.getSingleProductFromDB,
+);
+
+router.put(
+  '/:productId',
+  upload.array('files', 10),
+  (req, res, next) => {
+    if (req.body.data) {
+      req.body = JSON.parse(req.body.data);
+    }
+    next();
+  },
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller),
+  validateRequest(ProductValidation.updateProductValidationSchema),
+  ProductController.updateProductIntoDB,
+);
+
 export const ProductRoutes = router;

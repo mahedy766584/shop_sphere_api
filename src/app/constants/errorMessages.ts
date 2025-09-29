@@ -73,6 +73,8 @@ export const ErrorMessages = {
     UPDATE_FAILED: 'Failed to update the shop information.',
     DELETE_FAILED: 'Failed to delete the shop.',
     NOT_OWNER: 'You are not the owner of this shop',
+    NOT_ACTIVE: 'Your shop is not active',
+    DELETED: 'Your shope was deleted',
   },
 
   DISCOUNT: {

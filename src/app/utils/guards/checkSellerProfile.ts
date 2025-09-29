@@ -13,17 +13,11 @@ export const checkSellerProfile = async (userId: string, session?: ClientSession
     throw new AppError(status.FORBIDDEN, ErrorMessages.SELLER.NOT_FOUND);
   }
 
-  if (seller) {
-    if (seller.status === 'pending') {
-      throw new AppError(status.BAD_REQUEST, ErrorMessages.SELLER.ALREADY_PENDING);
-    }
-    if (seller.status === 'approved') {
-      throw new AppError(status.BAD_REQUEST, ErrorMessages.SELLER.ALREADY_APPROVED);
-    }
-    if (seller.status === 'rejected') {
-      throw new AppError(status.BAD_REQUEST, ErrorMessages.SELLER.ALREADY_REJECTED);
-    }
-  }
-
   return seller;
+};
+
+export const ensureSellerStatus = (seller: { status: string }, allowed: string[]) => {
+  if (!allowed.includes(seller.status)) {
+    throw new AppError(status.BAD_REQUEST, ErrorMessages.SELLER.NOT_VERIFIED);
+  }
 };

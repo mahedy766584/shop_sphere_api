@@ -21,7 +21,6 @@ const auth = (...requiredRoles: TUserRole[]) => {
     const authHeader = req.headers.authorization || '';
 
     const token = authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1] : authHeader;
-
     if (!token) {
       throw new AppError(status.UNAUTHORIZED, ErrorMessages.AUTH.UNAUTHORIZED);
     }

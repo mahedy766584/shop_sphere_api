@@ -38,7 +38,6 @@ const ProductSchema = new Schema<TProduct>(
     },
     slug: {
       type: String,
-      required: [true, 'Slug is required'],
       unique: true,
       lowercase: true,
       trim: true,
@@ -110,6 +109,11 @@ const ProductSchema = new Schema<TProduct>(
       type: Boolean,
       default: true,
     },
+    category: {
+      type: Schema.Types.ObjectId,
+      ref: 'Category',
+      required: [true, 'Category is required'],
+    },
     isDeleted: {
       type: Boolean,
       default: false,
@@ -145,5 +149,11 @@ ProductSchema.index({ brand: 1 }); // filter by brand
 ProductSchema.index({ 'attributes.key': 1, 'attributes.value': 1 }); // filter by attributes
 ProductSchema.index({ price: 1 }); // price range filter
 ProductSchema.index({ stock: 1 }); // stock filter
+
+ProductSchema.pre('aggregate', async function (next) {
+  this.pipeline().unshift({ $match: { isDelete: { $ne: true } } });
+
+  next();
+});
 
 export const Product = model('Product', ProductSchema);
