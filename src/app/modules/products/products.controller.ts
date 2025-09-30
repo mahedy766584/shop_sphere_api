@@ -68,9 +68,88 @@ const updateProductIntoDB = catchAsync(async (req, res) => {
   });
 });
 
+const softDeleteProductFromDB = catchAsync(async (req, res) => {
+  const { productId } = req.params;
+  const { userId } = req.user;
+  const result = await ProductService.softDeleteProductFromDB(productId, userId);
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Product is deleted successfully',
+    data: result,
+  });
+});
+
+const restoreProductIntoDB = catchAsync(async (req, res) => {
+  const { productId } = req.params;
+  const { userId } = req.user;
+  const result = await ProductService.restoreProductIntoDB(userId, productId);
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Product is restored successfully',
+    data: result,
+  });
+});
+
+const updateProductStock = catchAsync(async (req, res) => {
+  const { productId } = req.params;
+  const { userId } = req.user;
+  const { stock } = req.body;
+  const result = await ProductService.updateProductStock(userId, productId, stock);
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Product is incremented successfully',
+    data: result,
+  });
+});
+
+const getProductByShopFromDB = catchAsync(async (req, res) => {
+  const { shopId } = req.params;
+  const { result, meta } = await ProductService.getProductByShopFromDB(shopId, req.query);
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Your product is retrieved successfully',
+    meta: meta,
+    data: result,
+  });
+});
+
+const toggleProductStatus = catchAsync(async (req, res) => {
+  const { productId } = req.params;
+  const { userId } = req.user;
+  const result = await ProductService.toggleProductStatus(userId, productId);
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: `You changed product status successfully. Current status: ${result?.isActive ? 'Active' : 'Inactive'}`,
+    data: result,
+  });
+});
+
+const toggleProductFeatures = catchAsync(async (req, res) => {
+  const { productId } = req.params;
+  const { userId } = req.user;
+  const result = await ProductService.toggleProductFeatures(userId, productId);
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: `Product has been ${result?.isFeatured ? 'marked as Featured' : 'removed from Featured'} successfully.`,
+    data: result,
+  });
+});
+
 export const ProductController = {
   createProductIntoDB,
   getAllProductsFromDB,
   getSingleProductFromDB,
   updateProductIntoDB,
+  softDeleteProductFromDB,
+  restoreProductIntoDB,
+  updateProductStock,
+  getProductByShopFromDB,
+  toggleProductStatus,
+  toggleProductFeatures,
 };

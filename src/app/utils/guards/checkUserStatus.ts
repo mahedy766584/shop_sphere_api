@@ -8,7 +8,6 @@ import AppError from '@errors/appError.js';
 
 export const checkUserStatus = async (userId: string, session?: ClientSession) => {
   const user = await User.findById(userId).session(session || null);
-
   if (!user) {
     throw new AppError(status.NOT_FOUND, ErrorMessages.USER.NOT_FOUND);
   }

@@ -5,7 +5,7 @@ export type TAuditLog = {
   _id?: Types.ObjectId | string;
   resourceType: string;
   resourceId: Types.ObjectId | string;
-  action: 'create' | 'update' | 'delete' | 'verify' | 'unVerify' | 'custom';
+  action: 'create' | 'update' | 'delete' | 'verify' | 'unVerify' | 'custom' | 'restore';
   performedBy: Types.ObjectId | string;
   performedAt?: Date;
   previousData?: Record<string, any> | null;

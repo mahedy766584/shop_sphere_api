@@ -35,6 +35,12 @@ router.get(
   ProductController.getSingleProductFromDB,
 );
 
+router.get(
+  '/:shopId/shop',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller),
+  ProductController.getProductByShopFromDB,
+);
+
 router.put(
   '/:productId',
   upload.array('files', 10),
@@ -47,6 +53,37 @@ router.put(
   auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller),
   validateRequest(ProductValidation.updateProductValidationSchema),
   ProductController.updateProductIntoDB,
+);
+
+router.patch(
+  '/:productId',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller),
+  ProductController.restoreProductIntoDB,
+);
+
+router.patch(
+  '/:productId/stock',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller),
+  validateRequest(ProductValidation.updateProductQuantityValidationSchema),
+  ProductController.updateProductStock,
+);
+
+router.patch(
+  '/:productId/status',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller),
+  ProductController.toggleProductStatus,
+);
+
+router.patch(
+  '/:productId/features',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller),
+  ProductController.toggleProductFeatures,
+);
+
+router.delete(
+  '/:productId',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller),
+  ProductController.softDeleteProductFromDB,
 );
 
 export const ProductRoutes = router;

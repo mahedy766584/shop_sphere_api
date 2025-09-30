@@ -6,7 +6,7 @@ const auditLogSchema = new Schema(
     resourceId: { type: Schema.Types.ObjectId, required: true, index: true },
     action: {
       type: String,
-      enum: ['create', 'update', 'delete', 'custom', 'verify', 'unVerify'],
+      enum: ['create', 'update', 'delete', 'custom', 'verify', 'unVerify', 'restore'],
       required: true,
     },
     performedBy: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },

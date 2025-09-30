@@ -255,9 +255,205 @@ const updateProductIntoDB = async (
   });
 };
 
+const softDeleteProductFromDB = async (productId: string, userId: string) => {
+  return withTransaction(async (session) => {
+    //✅ guards
+    await checkUserStatus(userId, session);
+    const seller = await checkSellerProfile(userId, session);
+    ensureSellerStatus(seller, ['approved']);
+
+    //✅ find product
+    const product = await Product.findById(productId).session(session);
+    if (!product) throw new AppError(status.NOT_FOUND, ErrorMessages.PRODUCT.NOT_FOUND);
+    if (product.isDeleted)
+      throw new AppError(status.BAD_REQUEST, ErrorMessages.PRODUCT.ALREADY_DELETED);
+
+    const shopId = product.shop?.toString();
+    if (!shopId) throw new AppError(status.BAD_REQUEST, 'Product does not belong to any shop');
+
+    //✅ ownership check
+    await checkShopOwnership(shopId, userId, session);
+
+    const productDelete = await Product.findOneAndUpdate(
+      { _id: product, shop: shopId },
+      { isDeleted: true, isActive: false },
+      { new: true, session },
+    );
+
+    if (!product) throw new AppError(status.NOT_FOUND, ErrorMessages.PRODUCT.NOT_FOUND);
+
+    await AuditService.createFromDocs(
+      {
+        resourceType: 'DELETE_PRODUCT',
+        resourceId: product._id,
+        action: 'delete',
+        performedBy: new Types.ObjectId(userId),
+        previousData: null,
+        newData: product.toObject(),
+        meta: { shopId: shopId, sellerId: seller?._id },
+      },
+      { session },
+    );
+
+    return productDelete;
+  });
+};
+
+const restoreProductIntoDB = async (userId: string, productId: string) => {
+  return withTransaction(async (session) => {
+    //✅ guards
+    await checkUserStatus(userId, session);
+    const seller = await checkSellerProfile(userId, session);
+    ensureSellerStatus(seller, ['approved']);
+    //✅ find product
+    const product = await Product.findById(productId).session(session);
+    if (!product) throw new AppError(status.NOT_FOUND, ErrorMessages.PRODUCT.NOT_FOUND);
+
+    const shopId = product.shop?.toString();
+    if (!shopId) throw new AppError(status.BAD_REQUEST, 'Product does not belong to any shop');
+
+    //✅ ownership check
+    await checkShopOwnership(shopId, userId, session);
+
+    const productDelete = await Product.findOneAndUpdate(
+      { _id: product, shop: shopId },
+      { isDeleted: false, isActive: true },
+      { new: true, session },
+    );
+
+    if (!product) throw new AppError(status.NOT_FOUND, ErrorMessages.PRODUCT.NOT_FOUND);
+
+    await AuditService.createFromDocs(
+      {
+        resourceType: 'RESTORE_PRODUCT',
+        resourceId: product._id,
+        action: 'restore',
+        performedBy: new Types.ObjectId(userId),
+        previousData: null,
+        newData: product.toObject(),
+        meta: { shopId: shopId, sellerId: seller?._id },
+      },
+      { session },
+    );
+
+    return productDelete;
+  });
+};
+
+const updateProductStock = async (userId: string, productId: string, stock: number) => {
+  return withTransaction(async (session) => {
+    //✅ guards
+    await checkUserStatus(userId, session);
+    const seller = await checkSellerProfile(userId, session);
+    ensureSellerStatus(seller, ['approved']);
+    //✅ find product
+    const product = await Product.findById(productId).session(session);
+    if (!product) throw new AppError(status.NOT_FOUND, ErrorMessages.PRODUCT.NOT_FOUND);
+
+    const shopId = product.shop?.toString();
+    if (!shopId) throw new AppError(status.BAD_REQUEST, 'Product does not belong to any shop');
+
+    //✅ ownership check
+    await checkShopOwnership(shopId, userId, session);
+
+    const productDelete = await Product.findOneAndUpdate(
+      { _id: product._id, shop: shopId },
+      { $set: { stock: Number(stock) } },
+      { new: true, session },
+    );
+
+    if (!product) throw new AppError(status.NOT_FOUND, ErrorMessages.PRODUCT.NOT_FOUND);
+
+    await AuditService.createFromDocs(
+      {
+        resourceType: 'RESTORE_PRODUCT',
+        resourceId: product._id,
+        action: 'restore',
+        performedBy: new Types.ObjectId(userId),
+        previousData: null,
+        newData: product.toObject(),
+        meta: { shopId: shopId, sellerId: seller?._id },
+      },
+      { session },
+    );
+
+    return productDelete;
+  });
+};
+
+const getProductByShopFromDB = async (shopId: string, query: Record<string, unknown>) => {
+  const productQuery = new QueryBuilder(Product.find({ shop: shopId, isDeleted: false }), query)
+    .search(['brand', 'name'])
+    .filter()
+    .sort()
+    .fields()
+    .paginate();
+
+  const result = await productQuery.modelQuery;
+  const meta = await productQuery.countTotal();
+
+  return { meta, result };
+};
+
+const toggleProductStatus = async (userId: string, productId: string) => {
+  return withTransaction(async (session) => {
+    //✅ guards
+    await checkUserStatus(userId, session);
+    const seller = await checkSellerProfile(userId, session);
+    ensureSellerStatus(seller, ['approved']);
+    //✅ find product
+    const product = await Product.findById(productId).session(session);
+    if (!product) throw new AppError(status.NOT_FOUND, ErrorMessages.PRODUCT.NOT_FOUND);
+
+    const shopId = product.shop?.toString();
+    if (!shopId) throw new AppError(status.BAD_REQUEST, 'Product does not belong to any shop');
+
+    //✅ ownership check
+    await checkShopOwnership(shopId, userId, session);
+
+    product.isActive = !product.isActive;
+    await product.save({ session });
+
+    if (!product) throw new AppError(status.NOT_FOUND, ErrorMessages.PRODUCT.NOT_FOUND);
+
+    return product;
+  });
+};
+
+const toggleProductFeatures = async (userId: string, productId: string) => {
+  return withTransaction(async (session) => {
+    //✅ guards
+    await checkUserStatus(userId, session);
+    const seller = await checkSellerProfile(userId, session);
+    ensureSellerStatus(seller, ['approved']);
+    //✅ find product
+    const product = await Product.findById(productId).session(session);
+    if (!product) throw new AppError(status.NOT_FOUND, ErrorMessages.PRODUCT.NOT_FOUND);
+
+    const shopId = product.shop?.toString();
+    if (!shopId) throw new AppError(status.BAD_REQUEST, 'Product does not belong to any shop');
+
+    //✅ ownership check
+    await checkShopOwnership(shopId, userId, session);
+
+    product.isFeatured = !product.isFeatured;
+    await product.save({ session });
+
+    if (!product) throw new AppError(status.NOT_FOUND, ErrorMessages.PRODUCT.NOT_FOUND);
+
+    return product;
+  });
+};
+
 export const ProductService = {
   createProductIntoDB,
   getAllProductsFromDB,
   getSingleProductFromDB,
   updateProductIntoDB,
+  softDeleteProductFromDB,
+  restoreProductIntoDB,
+  updateProductStock,
+  getProductByShopFromDB,
+  toggleProductStatus,
+  toggleProductFeatures,
 };

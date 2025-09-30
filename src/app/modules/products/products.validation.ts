@@ -205,7 +205,19 @@ const updateProductValidationSchema = z
     path: ['discountPrice'],
   });
 
+const updateProductQuantityValidationSchema = z.object({
+  body: z.object({
+    stock: z
+      .number({
+        error: 'Stock must be a number',
+      })
+      .int({ message: 'Stock must be an integer' })
+      .min(0, { message: 'Stock cannot be negative' }),
+  }),
+});
+
 export const ProductValidation = {
   createProductValidationSchema,
   updateProductValidationSchema,
+  updateProductQuantityValidationSchema,
 };
