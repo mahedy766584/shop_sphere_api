@@ -63,6 +63,7 @@ export const ErrorMessages = {
     ALREADY_DELETED: 'This product already deleted!',
     AVAILABLE: (field: string | number) => `Only ${field} items are available for this product.`,
     QUANTITY_EXCEEDS: (stock: number) => `Quantity exceeds available stock (${stock}).`,
+    NO_SHOP: 'Product does not belong to any shop.',
   },
 
   SHOP: {

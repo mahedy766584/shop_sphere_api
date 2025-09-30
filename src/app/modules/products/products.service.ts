@@ -128,7 +128,7 @@ const updateProductIntoDB = async (
     if (!product) throw new AppError(status.NOT_FOUND, ErrorMessages.PRODUCT.NOT_FOUND);
 
     const shopId = product.shop?.toString();
-    if (!shopId) throw new AppError(status.BAD_REQUEST, 'Product does not belong to any shop');
+    if (!shopId) throw new AppError(status.BAD_REQUEST, ErrorMessages.PRODUCT.NO_SHOP);
 
     //✅ ownership check
     await checkShopOwnership(shopId, userId, session);
@@ -269,7 +269,7 @@ const softDeleteProductFromDB = async (productId: string, userId: string) => {
       throw new AppError(status.BAD_REQUEST, ErrorMessages.PRODUCT.ALREADY_DELETED);
 
     const shopId = product.shop?.toString();
-    if (!shopId) throw new AppError(status.BAD_REQUEST, 'Product does not belong to any shop');
+    if (!shopId) throw new AppError(status.BAD_REQUEST, ErrorMessages.PRODUCT.NO_SHOP);
 
     //✅ ownership check
     await checkShopOwnership(shopId, userId, session);
@@ -310,7 +310,7 @@ const restoreProductIntoDB = async (userId: string, productId: string) => {
     if (!product) throw new AppError(status.NOT_FOUND, ErrorMessages.PRODUCT.NOT_FOUND);
 
     const shopId = product.shop?.toString();
-    if (!shopId) throw new AppError(status.BAD_REQUEST, 'Product does not belong to any shop');
+    if (!shopId) throw new AppError(status.BAD_REQUEST, ErrorMessages.PRODUCT.NO_SHOP);
 
     //✅ ownership check
     await checkShopOwnership(shopId, userId, session);
@@ -351,7 +351,7 @@ const updateProductStock = async (userId: string, productId: string, stock: numb
     if (!product) throw new AppError(status.NOT_FOUND, ErrorMessages.PRODUCT.NOT_FOUND);
 
     const shopId = product.shop?.toString();
-    if (!shopId) throw new AppError(status.BAD_REQUEST, 'Product does not belong to any shop');
+    if (!shopId) throw new AppError(status.BAD_REQUEST, ErrorMessages.PRODUCT.NO_SHOP);
 
     //✅ ownership check
     await checkShopOwnership(shopId, userId, session);
@@ -406,7 +406,7 @@ const toggleProductStatus = async (userId: string, productId: string) => {
     if (!product) throw new AppError(status.NOT_FOUND, ErrorMessages.PRODUCT.NOT_FOUND);
 
     const shopId = product.shop?.toString();
-    if (!shopId) throw new AppError(status.BAD_REQUEST, 'Product does not belong to any shop');
+    if (!shopId) throw new AppError(status.BAD_REQUEST, ErrorMessages.PRODUCT.NO_SHOP);
 
     //✅ ownership check
     await checkShopOwnership(shopId, userId, session);
@@ -431,7 +431,7 @@ const toggleProductFeatures = async (userId: string, productId: string) => {
     if (!product) throw new AppError(status.NOT_FOUND, ErrorMessages.PRODUCT.NOT_FOUND);
 
     const shopId = product.shop?.toString();
-    if (!shopId) throw new AppError(status.BAD_REQUEST, 'Product does not belong to any shop');
+    if (!shopId) throw new AppError(status.BAD_REQUEST, ErrorMessages.PRODUCT.NO_SHOP);
 
     //✅ ownership check
     await checkShopOwnership(shopId, userId, session);
