@@ -25,9 +25,7 @@ const createOrderValidationSchema = z.object({
       country: z.string({ message: 'Country is required.' }),
       phone: z.string().optional(),
     }),
-    discountAmount: z.number().min(0).optional().default(0),
     currency: z.string().optional().default('BDT'),
-    reserve: z.boolean().optional().default(true),
   }),
 });
 
@@ -46,9 +44,9 @@ const shipOrderSchema = z.object({
   }),
 });
 
-const orderIdParamSchema = z.object({
+const createStripePaymentSchema = z.object({
   body: z.object({
-    id: z.string().min(1),
+    invoiceId: z.string().min(10, 'InvoiceId is required and must be valid'),
   }),
 });
 
@@ -56,5 +54,5 @@ export const OrderValidation = {
   createOrderValidationSchema,
   paymentWebhookSchema,
   shipOrderSchema,
-  orderIdParamSchema,
+  createStripePaymentSchema,
 };

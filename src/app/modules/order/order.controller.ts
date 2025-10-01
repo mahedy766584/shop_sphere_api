@@ -16,7 +16,19 @@ const createOrderIntoDB = catchAsync(async (req, res) => {
   });
 });
 
-const paymentWebhook = catchAsync(async (req, res) => {
+const createStripePayment = catchAsync(async (req, res) => {
+  const { invoiceId } = req.body;
+  const { userId } = req.user;
+  const result = await OrderService.createStripePayment(invoiceId, userId);
+  sendResponse(res, {
+    statusCode: status.OK || 200,
+    success: true,
+    message: 'Stripe PaymentIntent created successfully',
+    data: result,
+  });
+});
+
+const confirmPayment = catchAsync(async (req, res) => {
   const { orderId, transactionId, status, gatewayResponse } = req.body;
   if (status === 'success') {
     const order = await OrderService.confirmPayment(orderId, transactionId, gatewayResponse);
@@ -38,7 +50,7 @@ const paymentWebhook = catchAsync(async (req, res) => {
 });
 
 const shipOrder = catchAsync(async (req, res) => {
-  const orderId = req.params.id;
+  const { orderId } = req.params;
   const { shipmentId } = req.body;
   const order = await OrderService.shipOrder(orderId, shipmentId, req.user.userId);
   return sendResponse(res, {
@@ -50,7 +62,7 @@ const shipOrder = catchAsync(async (req, res) => {
 });
 
 const deliverOrder = catchAsync(async (req, res) => {
-  const orderId = req.params.id;
+  const { orderId } = req.params;
   const order = await OrderService.deliverOrder(orderId);
   return sendResponse(res, {
     statusCode: status.OK,
@@ -61,8 +73,8 @@ const deliverOrder = catchAsync(async (req, res) => {
 });
 
 const cancelOrder = catchAsync(async (req, res) => {
-  const orderId = req.params.id;
-  const order = await OrderService.cancelOrder(orderId, req.user.userId);
+  const { invoiceId } = req.params;
+  const order = await OrderService.cancelOrder(invoiceId, req.user.userId);
   return sendResponse(res, {
     statusCode: status.OK,
     success: true,
@@ -73,7 +85,8 @@ const cancelOrder = catchAsync(async (req, res) => {
 
 export const OrderController = {
   createOrderIntoDB,
-  paymentWebhook,
+  createStripePayment,
+  confirmPayment,
   shipOrder,
   deliverOrder,
   cancelOrder,

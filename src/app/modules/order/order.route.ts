@@ -16,25 +16,31 @@ router.post(
 );
 
 router.post(
-  '/webhook/payment',
-  validateRequest(OrderValidation.paymentWebhookSchema),
-  OrderController.paymentWebhook,
+  '/payment/stripe',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.customer, USER_ROLE.seller),
+  validateRequest(OrderValidation.createStripePaymentSchema),
+  OrderController.createStripePayment,
 );
 
 router.post(
-  '/:id/ship',
+  '/webhook/payment',
+  validateRequest(OrderValidation.paymentWebhookSchema),
+  OrderController.confirmPayment,
+);
+
+router.post(
+  '/:orderId/ship',
   validateRequest(OrderValidation.shipOrderSchema),
   auth(USER_ROLE.seller),
   OrderController.shipOrder,
 );
 
 router.post(
-  '/:id/deliver',
+  '/:orderId/deliver',
   auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.customer, USER_ROLE.seller),
-  validateRequest(OrderValidation.orderIdParamSchema),
   OrderController.deliverOrder,
 );
 
-router.post('/:id/cancel', auth(USER_ROLE.customer), OrderController.cancelOrder);
+router.post('/:invoiceId/cancel', auth(USER_ROLE.customer), OrderController.cancelOrder);
 
 export const OrderRoutes = router;

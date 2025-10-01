@@ -21,7 +21,7 @@ export const checkUserStatus = async (userId: string, session?: ClientSession) =
   }
 
   if (!user.isEmailVerified) {
-    throw new AppError(status.FORBIDDEN, ErrorMessages.SELLER.NOT_VERIFIED);
+    throw new AppError(status.FORBIDDEN, ErrorMessages.USER.EMAIL_VERIFICATION_REQUIRED);
   }
 
   return user;

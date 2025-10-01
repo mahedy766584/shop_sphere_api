@@ -32,7 +32,7 @@ export type TOrderLog = {
 export type TOrder = {
   user: Types.ObjectId;
   product: Types.ObjectId;
-  quantity: number;
+  quantity: number | string;
   priceAtAddTime: number;
   totalAmount: number;
   discountAmount?: number;
@@ -42,20 +42,19 @@ export type TOrder = {
   status: OrderStatus;
   payment: TPayment;
   shippingAddress: TShippingAddress;
-  reserved?: boolean;
   orderLogs?: TOrderLog[];
   invoiceId?: string;
   isDeleted?: boolean;
   deletedAt?: Date;
 };
 
-export type TPayload = {
-  userId: string | Types.ObjectId;
-  product: string | Types.ObjectId;
-  quantity: number;
-  payment: TPayment;
-  shippingAddress: TShippingAddress;
-  discountAmount?: number;
-  currency?: string;
-  reserve?: boolean;
-};
+// export type TPayload = {
+//   userId: string | Types.ObjectId;
+//   product: string | Types.ObjectId;
+//   quantity: number;
+//   payment: TPayment;
+//   shippingAddress: TShippingAddress;
+//   discountAmount?: number;
+//   currency?: string;
+//   reserve?: boolean;
+// };

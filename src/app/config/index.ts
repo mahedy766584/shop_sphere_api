@@ -26,4 +26,5 @@ export default {
   email_verification_expires_in: process.env.EMAIL_VERIFICATION_EXPIRES_IN,
   redis_url: process.env.REDIS_URL,
   cache_ttl: process.env.CACHE_TTL,
+  stripe_secret_key: process.env.STRIPE_SECRET_KEY,
 };
