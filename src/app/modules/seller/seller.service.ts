@@ -7,35 +7,22 @@ import { ErrorMessages } from '@constants/errorMessages.js';
 
 import AppError from '@errors/appError.js';
 
+import { withTransaction } from '@utils/db/withTransaction.js';
+import { checkSellerStatus } from '@utils/guards/checkSellerStatus.js';
+import { checkUserStatus } from '@utils/guards/checkUserStatus.js';
+
 import type { TStatus } from './seller.constant.js';
 import { allowedFields, sellerSearchableFields } from './seller.constant.js';
 import type { TSellerProfile } from './seller.interface.js';
 import { SellerProfile } from './seller.model.js';
 
 const applyForSellerIntoDB = async (userId: string, payload: TSellerProfile) => {
-  const user = await User.findById(userId);
-  if (!user) {
-    throw new AppError(status.NOT_FOUND, ErrorMessages.USER.NOT_FOUND);
-  }
-  if (user?.role !== 'customer') {
+  const userExisting = await checkUserStatus(userId);
+  if (userExisting?.role !== 'customer') {
     throw new AppError(status.BAD_REQUEST, ErrorMessages.SELLER.ONLY_CUSTOMER_CAN_APPLY);
   }
-  if (!user?.isEmailVerified) {
-    throw new AppError(status.FORBIDDEN, ErrorMessages.USER.EMAIL_VERIFICATION_REQUIRED);
-  }
 
-  const sellerExist = await SellerProfile.findOne({ user: userId });
-  if (sellerExist) {
-    if (sellerExist.status === 'pending') {
-      throw new AppError(status.BAD_REQUEST, ErrorMessages.SELLER.ALREADY_PENDING);
-    }
-    if (sellerExist.status === 'approved') {
-      throw new AppError(status.BAD_REQUEST, ErrorMessages.SELLER.ALREADY_APPROVED);
-    }
-    if (sellerExist.status === 'rejected') {
-      throw new AppError(status.BAD_REQUEST, ErrorMessages.SELLER.ALREADY_REJECTED);
-    }
-  }
+  await checkSellerStatus(userId);
 
   const result = await SellerProfile.create({ ...payload, user: userId, status: 'pending' });
   return result;
@@ -59,10 +46,7 @@ const updateMySellerProfileIntoDB = async (userId: string, payload: Partial<TSel
 };
 
 const updateSellerStatusIntoDB = async (sellerId: string, newStatus: TStatus) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  try {
+  return withTransaction(async (session) => {
     const seller = await SellerProfile.findOneAndUpdate(
       { user: new mongoose.Types.ObjectId(sellerId) },
       { $set: { status: newStatus, isVerified: true } },
@@ -81,15 +65,8 @@ const updateSellerStatusIntoDB = async (sellerId: string, newStatus: TStatus) =>
       );
     }
 
-    await session.commitTransaction();
-    session.endSession();
-
     return seller;
-  } catch (error) {
-    await session.abortTransaction();
-    await session.endSession();
-    throw error;
-  }
+  });
 };
 
 const getAllSellerFromDB = async (query: Record<string, unknown>) => {
