@@ -1,25 +1,22 @@
 import AuditService from '@modules/auditLog/auditLog.service.js';
-// import { NotificationService } from '@modules/notification/notification.service.js';
 import NotificationService from '@modules/notification/notification.service.js';
 import { Product } from '@modules/products/products.model.js';
 import { SellerProfile } from '@modules/seller/seller.model.js';
 import status from 'http-status';
 import type { Types } from 'mongoose';
-import mongoose from 'mongoose';
 
 import { ErrorMessages } from '@constants/errorMessages.js';
 
 import AppError from '@errors/appError.js';
+
+import { withTransaction } from '@utils/db/withTransaction.js';
 
 import { allowedFields } from './shop.constant.js';
 import type { TShop } from './shop.interface.js';
 import { Shop } from './shop.model.js';
 
 const createShopIntoDB = async (userId: string, payload: TShop) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  try {
+  return withTransaction(async (session) => {
     const seller = await SellerProfile.findOne({ user: userId }).session(session);
     if (!seller) {
       throw new AppError(status.NOT_FOUND, ErrorMessages.SELLER.NOT_FOUND);
@@ -52,22 +49,12 @@ const createShopIntoDB = async (userId: string, payload: TShop) => {
       { session },
     );
 
-    await session.commitTransaction();
-    await session.endSession();
-
     return newShop;
-  } catch (error) {
-    await session.abortTransaction();
-    await session.endSession();
-    throw error;
-  }
+  });
 };
 
 const updateMyShopIntoDB = async (userId: string, shopId: string, payload: Partial<TShop>) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  try {
+  return withTransaction(async (session) => {
     const existingShop = await Shop.findById(shopId).session(session);
     if (!existingShop) {
       throw new AppError(status.BAD_REQUEST, ErrorMessages.SHOP.NOT_FOUND);
@@ -110,16 +97,8 @@ const updateMyShopIntoDB = async (userId: string, shopId: string, payload: Parti
       { session },
     );
 
-    await session.commitTransaction();
-    await session.endSession();
-
     return result;
-  } catch (error) {
-    await session.abortTransaction();
-    throw error;
-  } finally {
-    await session.endSession();
-  }
+  });
 };
 
 const verifyShopIntoDB = async (
@@ -127,10 +106,7 @@ const verifyShopIntoDB = async (
   isVerified: boolean,
   performedBy: string | Types.ObjectId,
 ) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  try {
+  return withTransaction(async (session) => {
     const shop = await Shop.findByIdAndUpdate(
       shopId,
       { isVerified, isActive: true },
@@ -170,16 +146,8 @@ const verifyShopIntoDB = async (
       { session },
     );
 
-    await session.commitTransaction();
-    await session.endSession();
-
     return shop;
-  } catch (error) {
-    await session.abortTransaction();
-    throw error;
-  } finally {
-    await session.endSession();
-  }
+  });
 };
 
 const getAllShop = async () => {
@@ -210,10 +178,7 @@ const getShopAsOwner = async (userId: string) => {
 };
 
 const softDeleteShopIntoDB = async (shopId: string, sellerId: string) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  try {
+  return withTransaction(async (session) => {
     const shop = await Shop.findOne({ _id: shopId, owner: sellerId }).session(session);
     if (!shop) throw new AppError(status.NOT_FOUND, ErrorMessages.SHOP.NOT_FOUND);
 
@@ -262,15 +227,8 @@ const softDeleteShopIntoDB = async (shopId: string, sellerId: string) => {
       { session },
     );
 
-    session.commitTransaction();
-
     return shop;
-  } catch (error) {
-    await session.abortTransaction();
-    throw error;
-  } finally {
-    await session.endSession();
-  }
+  });
 };
 
 export const ShopService = {
