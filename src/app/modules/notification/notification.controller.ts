@@ -5,11 +5,9 @@ import sendResponse from '@utils/common/sendResponse.js';
 
 import NotificationService from './notification.service.js';
 
-// 🔹 fetch all user notifications
 const getUserNotifications = catchAsync(async (req, res) => {
   const { userId } = req.user;
   const { meta, result } = await NotificationService.findAllByUser(userId, req.query);
-
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
@@ -19,13 +17,10 @@ const getUserNotifications = catchAsync(async (req, res) => {
   });
 });
 
-// 🔹 mark single notification as read
 const markNotificationAsRead = catchAsync(async (req, res) => {
   const { userId } = req.user;
   const { notificationId } = req.params;
-
   const updated = await NotificationService.markAsRead(notificationId, userId);
-
   sendResponse(res, {
     statusCode: updated ? status.OK : status.NOT_FOUND,
     success: !!updated,
@@ -34,7 +29,6 @@ const markNotificationAsRead = catchAsync(async (req, res) => {
   });
 });
 
-// 🔹 mark all notifications as read
 const markAllNotificationsAsRead = catchAsync(async (req, res) => {
   const { userId } = req.user;
 

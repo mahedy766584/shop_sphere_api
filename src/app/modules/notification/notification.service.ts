@@ -62,36 +62,26 @@ class NotificationService {
     );
   }
 
-  // 🔹 fetch all user notifications (with QueryBuilder)
-  static async findAllByUser(
-    userId: string | Types.ObjectId,
-    query: Record<string, unknown>, // req.query আসবে controller থেকে
-  ) {
-    // base filter
+  static async findAllByUser(userId: string | Types.ObjectId, query: Record<string, unknown>) {
     const filter: any = { user: userId, isDeleted: false };
     if (query.unreadOnly === 'true') filter.isRead = false;
 
-    // 🔹 base mongoose query
     const notificationQuery = Notification.find(filter);
 
-    // 🔹 apply query builder
     const notificationQueryBuilder = new QueryBuilder(notificationQuery, query)
-      .search(['title', 'message']) // searchable fields
+      .search(['title', 'message'])
       .filter()
       .sort()
       .paginate()
       .fields();
 
-    // execute query
     const result = await notificationQueryBuilder.modelQuery.lean();
 
-    // pagination meta
     const meta = await notificationQueryBuilder.countTotal();
 
     return { meta, result };
   }
 
-  // 🔹 mark as read
   static async markAsRead(notificationId: string, userId: string) {
     return Notification.findOneAndUpdate(
       { _id: notificationId, user: userId },
@@ -100,7 +90,6 @@ class NotificationService {
     );
   }
 
-  // 🔹 mark all read
   static async markAllAsRead(userId: string) {
     return Notification.updateMany(
       { user: userId, isRead: false },
@@ -108,7 +97,6 @@ class NotificationService {
     );
   }
 
-  // 🔹 delete notification (soft delete)
   static async softDelete(notificationId: string, userId: string) {
     return Notification.findOneAndUpdate(
       { _id: notificationId, user: userId },
@@ -117,7 +105,6 @@ class NotificationService {
     );
   }
 
-  // 🔹 prune old notifications
   static async pruneOlderThan(date: Date) {
     return Notification.deleteMany({ createdAt: { $lt: date } });
   }
