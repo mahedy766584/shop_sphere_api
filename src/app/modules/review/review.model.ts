@@ -29,6 +29,10 @@ const reviewSchema = new Schema<TReview>(
       type: [String],
       default: [],
     },
+    likes: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
     isVerifiedPurchase: {
       type: Boolean,
       default: false,

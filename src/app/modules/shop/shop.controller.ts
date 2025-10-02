@@ -44,11 +44,12 @@ const verifyShopIntoDB = catchAsync(async (req, res) => {
 });
 
 const getAllShop = catchAsync(async (req, res) => {
-  const result = await ShopService.getAllShop();
+  const { result, meta } = await ShopService.getAllShop(req.query);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
     message: SuccessMessages.SHOP.RETRIEVED,
+    meta: meta,
     data: result,
   });
 });

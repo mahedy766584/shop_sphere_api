@@ -2,6 +2,7 @@ import AuditService from '@modules/auditLog/auditLog.service.js';
 import NotificationService from '@modules/notification/notification.service.js';
 import { Product } from '@modules/products/products.model.js';
 import { SellerProfile } from '@modules/seller/seller.model.js';
+import QueryBuilder from 'app/builder/QueryBuilder.js';
 import status from 'http-status';
 import type { Types } from 'mongoose';
 
@@ -150,16 +151,28 @@ const verifyShopIntoDB = async (
   });
 };
 
-const getAllShop = async () => {
-  const result = await Shop.find().populate({
-    path: 'sellerProfile',
-    populate: {
-      path: 'user',
-      model: 'User',
-      select: 'name email role',
-    },
-  });
-  return result;
+const getAllShop = async (query: Record<string, unknown>) => {
+  const shopQuery = new QueryBuilder(
+    Shop.find().populate({
+      path: 'sellerProfile',
+      populate: {
+        path: 'user',
+        model: 'User',
+        select: 'name email role',
+      },
+    }),
+    query,
+  )
+    .search(['name'])
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await shopQuery.modelQuery;
+  const meta = await shopQuery.countTotal();
+
+  return { meta, result };
 };
 
 const getShopAsOwner = async (userId: string) => {

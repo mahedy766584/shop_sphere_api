@@ -33,7 +33,68 @@ const getProductReviews = catchAsync(async (req, res) => {
   });
 });
 
+const getReviewById = catchAsync(async (req, res) => {
+  const { reviewId } = req.params;
+  const result = await ReviewService.getReviewById(reviewId);
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Review is retrieved successfully',
+    data: result,
+  });
+});
+
+const updateReview = catchAsync(async (req, res) => {
+  const { reviewId } = req.params;
+  const { userId, userName, role } = req.user;
+  const result = await ReviewService.updateReview(
+    userId,
+    role as 'admin' | 'superAdmin',
+    userName as string,
+    reviewId,
+    req.files as Express.Multer.File[] | undefined,
+    req.body,
+  );
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Review is update successfully',
+    data: result,
+  });
+});
+
+const deleteReview = catchAsync(async (req, res) => {
+  const { reviewId } = req.params;
+  const { userId, role } = req.user;
+  const result = await ReviewService.deleteReview(
+    reviewId,
+    userId,
+    role as 'admin' | 'superAdmin' | 'customer',
+  );
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Review is deleted successfully',
+    data: result,
+  });
+});
+
+const getProductReviewDetails = catchAsync(async (req, res) => {
+  const { productId } = req.params;
+  const result = await ReviewService.getProductReviewDetails(productId);
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Review adn average rating is retrieved successfully',
+    data: result,
+  });
+});
+
 export const ReviewController = {
   createReviewIntoDB,
   getProductReviews,
+  getReviewById,
+  updateReview,
+  deleteReview,
+  getProductReviewDetails,
 };

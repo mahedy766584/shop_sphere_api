@@ -18,7 +18,7 @@ router.post(
     req.body = JSON.parse(req.body.data);
     next();
   },
-  auth(USER_ROLE.customer, USER_ROLE.seller),
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.customer),
   validateRequest(ReviewValidation.createReviewValidationSchema),
   ReviewController.createReviewIntoDB,
 );
@@ -27,6 +27,37 @@ router.get(
   '/:productId',
   auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.customer),
   ReviewController.getProductReviews,
+);
+
+router.get(
+  '/:reviewId/review',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.customer),
+  ReviewController.getReviewById,
+);
+
+router.get(
+  '/:productId/reviews',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.customer),
+  ReviewController.getProductReviewDetails,
+);
+
+router.put(
+  '/:reviewId',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.customer),
+  upload.array('files', 10),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = JSON.parse(req.body.data);
+    next();
+  },
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.customer),
+  validateRequest(ReviewValidation.updateReviewValidationSchema),
+  ReviewController.updateReview,
+);
+
+router.delete(
+  '/:reviewId',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.customer),
+  ReviewController.deleteReview,
 );
 
 export const ReviewRoutes = router;

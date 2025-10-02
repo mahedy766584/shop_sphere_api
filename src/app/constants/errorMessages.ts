@@ -50,6 +50,9 @@ export const ErrorMessages = {
 
   REVIEW: {
     REVIEWED: 'You have already reviewed this product',
+    NOT_FOUND: 'Your review not found',
+    INVALID_RATING: 'Rating must be between 1 and 5.',
+    UNAUTHORIZED_DELETE: 'You are not authorized to delete this review.',
   },
 
   PRODUCT: {

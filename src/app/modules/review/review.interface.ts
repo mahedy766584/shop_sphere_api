@@ -7,4 +7,5 @@ export type TReview = {
   comment?: string;
   images?: string[];
   isVerifiedPurchase: boolean;
+  likes?: Types.ObjectId[];
 };
