@@ -1,5 +1,3 @@
-// src/constants/errorMessages.ts
-
 export const ErrorMessages = {
   AUTH: {
     USER_NOT_FOUND: 'User not found. Please check the username or register a new account.',

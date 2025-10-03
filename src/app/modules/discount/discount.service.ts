@@ -7,42 +7,19 @@ import { ErrorMessages } from '@constants/errorMessages.js';
 
 import AppError from '@errors/appError.js';
 
+import { validateDates } from '@utils/validators/validateDates.js';
+import { validateDiscountValue } from '@utils/validators/validateDiscountValue.js';
+
 import type { TProductDiscount } from './discount.interface.js';
 import { ProductDiscount } from './discount.model.js';
-import { getBestActiveDiscountForProduct } from './discount.utiles.js';
+import { getBestActiveDiscountForProduct } from './discount.utils.js';
 
 const createProductDiscountIntoDB = async (userId: string, payload: TProductDiscount) => {
-  // Convert to Date objects to avoid getTime() error
   const startDate = new Date(payload.startDate);
   const endDate = new Date(payload.endDate);
 
-  // 1️⃣ Validate startDate < endDate
-  if (payload.startDate >= payload.endDate) {
-    throw new AppError(status.BAD_REQUEST, 'Start date bust be before end date.');
-  }
-
-  // 2️⃣ Validate startDate is not in the past
-  if (payload.startDate < new Date()) {
-    throw new AppError(status.BAD_REQUEST, 'Start date cannot be in the past.');
-  }
-
-  // 3️⃣ Validate duration (max 90 days)
-  const duration = endDate.getTime() - startDate.getTime();
-  if (duration > 90 * 24 * 60 * 60 * 1000) {
-    throw new AppError(status.BAD_REQUEST, 'Discount duration cannot exceed 90 days.');
-  }
-
-  // 4️⃣ Validate discount value
-  if (
-    payload.discountType === 'percentage' &&
-    (payload.discountValue <= 0 || payload.discountValue > 100)
-  ) {
-    throw new AppError(status.BAD_REQUEST, 'Percentage discount must be between 1 and 100.');
-  }
-
-  if (payload.discountType === 'flat' && payload.discountValue <= 0) {
-    throw new AppError(status.BAD_REQUEST, 'Flat discount must be greater than 0.');
-  }
+  validateDates(startDate, endDate);
+  validateDiscountValue(payload.discountType, payload.discountValue);
 
   // 5️⃣ Check product existence & status
   const product = await Product.findById(payload.productId);

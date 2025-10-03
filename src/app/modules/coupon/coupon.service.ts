@@ -1,75 +1,72 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import QueryBuilder from 'app/builder/QueryBuilder.js';
 import status from 'http-status';
 import { Types } from 'mongoose';
 
 import AppError from '@errors/appError.js';
 
+import { checkShopOwnership } from '@utils/guards/checkShopOwnership.js';
+import { checkUserStatus } from '@utils/guards/checkUserStatus.js';
+import { toObjectId } from '@utils/validators/objectId.js';
+import { validateDates } from '@utils/validators/validateDates.js';
+import { validateDiscountValue } from '@utils/validators/validateDiscountValue.js';
+
 import { allowedFields } from './coupon.constant.js';
 import type { TCoupon } from './coupon.interface.js';
 import { Coupon } from './coupon.model.js';
+import { normalizeDate } from './coupon.utils.js';
 
 const createCouponIntoDB = async (userId: string, payload: TCoupon) => {
-  // 1️⃣ Validate date logic
-  const startDate = new Date(payload.startDate);
-  const endDate = new Date(payload.endDate);
+  validateDates(payload.startDate, payload.endDate);
+  validateDiscountValue(payload.couponType, payload.couponValue);
 
-  if (startDate >= endDate) {
-    throw new AppError(status.BAD_REQUEST, 'Start date must be before end date.');
+  if (payload.minOrderAmount && payload.minOrderAmount <= 0) {
+    throw new AppError(status.BAD_REQUEST, 'Minimum order amount must be greater than 0.');
   }
 
-  if (startDate < new Date()) {
-    throw new AppError(status.BAD_REQUEST, 'Start date cannot be in the past.');
+  if (payload.maxCouponAmount && payload.maxCouponAmount <= 0) {
+    throw new AppError(status.BAD_REQUEST, 'Max discount amount must be greater than 0.');
   }
 
-  const duration = endDate.getTime() - startDate.getTime();
-  if (duration > 90 * 24 * 60 * 60 * 1000) {
-    throw new AppError(status.BAD_REQUEST, 'Coupon duration cannot exceed 90 days.');
-  }
-
-  // 2️⃣ Validate discount value based on type
-  if (
-    payload.discountType === 'percentage' &&
-    (payload.discountValue <= 0 || payload.discountValue > 100)
-  ) {
-    throw new AppError(status.BAD_REQUEST, 'Percentage discount must be between 1 and 100.');
-  }
-
-  if (payload.discountType === 'flat' && payload.discountValue <= 0) {
-    throw new AppError(status.BAD_REQUEST, 'Flat discount must be greater than 0.');
-  }
-
-  // 3️⃣ Optional numeric validations
-  if (payload.minPurchase && payload.minPurchase <= 0) {
-    throw new AppError(status.BAD_REQUEST, 'Minimum purchase must be greater than 0.');
-  }
-
-  if (payload.maxDiscount && payload.maxDiscount <= 0) {
-    throw new AppError(status.BAD_REQUEST, 'Max discount must be greater than 0.');
-  }
-
-  // 4️⃣ Ensure coupon code is unique (case-insensitive)
   const existing = await Coupon.findOne({ code: payload.code.toUpperCase() });
   if (existing) {
     throw new AppError(status.BAD_REQUEST, 'Coupon code already exists.');
   }
 
-  // 5️⃣ Normalize and assign meta data
+  const shop = await checkShopOwnership(payload.shop.toString(), userId);
+
+  const user = await checkUserStatus(userId);
+
   const couponData: TCoupon = {
     ...payload,
     code: payload.code.toUpperCase(),
-    createdBy: userId as any,
+    createdBy: toObjectId(user._id),
+    shop: toObjectId(shop._id.toString()),
     isActive: payload.isActive ?? true,
+    usedCount: 0,
+    userUsed: [],
   };
 
-  // 6️⃣ Create and return
-  const created = await Coupon.create(couponData);
+  const created = (await Coupon.create(couponData)).populate('shop', 'name');
   return created;
 };
 
-const getAllCouponsFromDB = async () => {
-  return await Coupon.find()
-    .populate('createdBy', 'name.firstName name.lastName email')
-    .sort({ createdAt: -1 });
+const getAllCouponsFromDB = async (query: Record<string, unknown>) => {
+  const couponQuery = new QueryBuilder(
+    Coupon.find()
+      .populate('createdBy', 'name.firstName name.lastName email')
+      .populate('shop', 'name'),
+    query,
+  )
+    .search(['code'])
+    .fields()
+    .filter()
+    .paginate()
+    .sort();
+
+  const result = await couponQuery.modelQuery;
+  const meta = await couponQuery.countTotal();
+  return { result, meta };
 };
 
 const getActiveCoupons = async () => {
@@ -81,14 +78,7 @@ const getActiveCoupons = async () => {
   })
     .populate('createdBy', 'name.firstName name.lastName email')
     .sort({ createdAt: 1 });
-
   return result;
-};
-
-const normalizeDate = (date: string | Date) => {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0); // normalize to midnight to avoid millisecond mismatch
-  return d;
 };
 
 const updateCouponIntoDB = async (
@@ -129,16 +119,19 @@ const updateCouponIntoDB = async (
     payload.code = payload.code.toUpperCase();
   }
 
-  // 6️⃣ Prepare allowed fields
+  // 6️⃣ Pick only allowed fields
   const updateData: Partial<TCoupon> = {};
   for (const key of allowedFields) {
-    if (payload[key] !== undefined) updateData[key] = payload[key] as any;
+    if (payload[key] !== undefined) {
+      updateData[key] = payload[key] as any;
+    }
   }
 
   // 7️⃣ Dates normalization
   const newStart = payload.startDate
     ? normalizeDate(payload.startDate)
     : normalizeDate(coupon.startDate);
+
   const newEnd = payload.endDate ? normalizeDate(payload.endDate) : normalizeDate(coupon.endDate);
 
   // 8️⃣ Dates validation
@@ -149,9 +142,8 @@ const updateCouponIntoDB = async (
     throw new AppError(status.BAD_REQUEST, 'End date must be after start date');
   }
 
-  // 9️⃣ Overlapping check (ignore self)
+  // 9️⃣ Overlapping check (only if dates changed)
   if (payload.startDate || payload.endDate) {
-    // check only if dates changed
     const overlapping = await Coupon.findOne({
       _id: { $ne: couponId },
       createdBy: coupon.createdBy,
@@ -170,7 +162,7 @@ const updateCouponIntoDB = async (
   }
 
   // 🔟 Update coupon
-  Object.assign(coupon, updateData);
+  Object.assign(coupon, updateData, { startDate: newStart, endDate: newEnd });
   await coupon.save();
 
   return await coupon.populate('createdBy', 'name.firstName name.lastName email');
@@ -181,6 +173,8 @@ const deleteCoupon = async (
   couponId: string,
   role?: 'superAdmin' | 'admin' | 'seller' | 'customer',
 ) => {
+  const now = new Date();
+
   // 1️⃣ Validate couponId
   if (!Types.ObjectId.isValid(couponId)) {
     throw new AppError(status.BAD_REQUEST, 'Invalid coupon id');
@@ -197,64 +191,59 @@ const deleteCoupon = async (
     throw new AppError(status.FORBIDDEN, 'You are not allowed to delete this coupon');
   }
 
-  // 4️⃣ Prevent deleting active or future coupons
-  const now = new Date();
-  if (coupon.isActive && coupon.startDate <= now) {
+  // 4️⃣ Prevent deleting running coupon
+  if (coupon.startDate <= now && coupon.endDate >= now && coupon.isActive) {
     throw new AppError(status.BAD_REQUEST, 'Cannot delete a coupon that is currently active');
   }
 
-  if (coupon.startDate > now) {
-    throw new AppError(status.BAD_REQUEST, 'Cannot delete a coupon that is not yet active');
-  }
-
-  // 5️⃣ Soft delete (industry standard)
+  // 5️⃣ Soft delete (mark as deleted instead of removing)
   coupon.isActive = false;
+  (coupon as any).isDeleted = true; // 👉 add `isDeleted: { type: Boolean, default: false }` in schema
   await coupon.save();
 
   return coupon;
 };
 
-//TODO
-// const applyCoupon = async (code: string, userId: string, orderAmount: number) => {
-//   const coupon = await Coupon.findOne({ code: code.toUpperCase() });
-//   if (!coupon) throw new Error('Invalid coupon');
-//   if (!coupon.isActive) throw new Error('Coupon is inactive');
+const applyCoupon = async (code: string, userId: string, orderAmount: number) => {
+  const coupon = await Coupon.findOne({ code: code.toUpperCase() });
+  if (!coupon) throw new AppError(status.BAD_REQUEST, 'Invalid coupon');
+  if (!coupon.isActive) throw new AppError(status.FORBIDDEN, 'Coupon is inactive');
 
-//   const now = new Date();
-//   if (coupon.startDate > now || coupon.endDate < now) throw new Error('Coupon expired');
+  const now = new Date();
+  if (coupon.startDate > now || coupon.endDate < now) throw new Error('Coupon expired');
 
-//   if (coupon.minOrderAmount && orderAmount < coupon.minOrderAmount)
-//     throw new Error(`Order must be at least ${coupon.minOrderAmount}`);
+  if (coupon.minOrderAmount && orderAmount < coupon.minOrderAmount)
+    throw new Error(`Order must be at least ${coupon.minOrderAmount}`);
 
-//   // Usage limits
-//   if (coupon.usageLimit && coupon.usedCount! >= coupon.usageLimit)
-//     throw new Error('Coupon usage limit reached');
+  // Usage limits
+  if (coupon.usageLimit && coupon.usedCount! >= coupon.usageLimit)
+    throw new Error('Coupon usage limit reached');
 
-//   const userUsage = coupon.userUsed?.find((u) => u.userId.toString() === userId);
-//   if (coupon.perUserLimit && userUsage && userUsage.count >= coupon.perUserLimit)
-//     throw new Error('You have already used this coupon maximum times');
+  const userUsage = coupon.userUsed?.find((u) => u.userId.toString() === userId);
+  if (coupon.perUserLimit && userUsage && userUsage.count >= coupon.perUserLimit)
+    throw new Error('You have already used this coupon maximum times');
 
-//   // Calculate discount
-//   let discount = 0;
-//   if (coupon.type === 'percentage') {
-//     discount = (orderAmount * (coupon.discountValue ?? 0)) / 100;
-//     if (coupon.maxDiscountAmount && discount > coupon.maxDiscountAmount)
-//       discount = coupon.maxDiscountAmount;
-//   } else if (coupon.type === 'flat') {
-//     discount = coupon.discountValue ?? 0;
-//   }
+  // Calculate discount
+  let discount = 0;
+  if (coupon.type === 'percentage') {
+    discount = (orderAmount * (coupon.discountValue ?? 0)) / 100;
+    if (coupon.maxDiscountAmount && discount > coupon.maxDiscountAmount)
+      discount = coupon.maxDiscountAmount;
+  } else if (coupon.type === 'flat') {
+    discount = coupon.discountValue ?? 0;
+  }
 
-//   // Update usage counts
-//   coupon.usedCount = (coupon.usedCount ?? 0) + 1;
-//   if (userUsage) {
-//     userUsage.count += 1;
-//   } else {
-//     coupon.userUsed?.push({ userId, count: 1 });
-//   }
-//   await coupon.save();
+  // Update usage counts
+  coupon.usedCount = (coupon.usedCount ?? 0) + 1;
+  if (userUsage) {
+    userUsage.count += 1;
+  } else {
+    coupon.userUsed?.push({ userId, count: 1 });
+  }
+  await coupon.save();
 
-//   return { discount, finalAmount: orderAmount - discount };
-// };
+  return { discount, finalAmount: orderAmount - discount };
+};
 
 export const CouponService = {
   createCouponIntoDB,
@@ -262,4 +251,5 @@ export const CouponService = {
   getActiveCoupons,
   updateCouponIntoDB,
   deleteCoupon,
+  applyCoupon,
 };

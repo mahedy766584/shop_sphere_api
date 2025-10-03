@@ -1,152 +1,178 @@
 import { z } from 'zod';
 
+import { objectIdSchema } from '@utils/validators/objectIdValidator.js';
+
+import { couponType } from './coupon.constant.js';
+
 const createCouponValidationSchema = z
   .object({
     body: z.object({
       code: z
-        .string({ message: 'Coupon code must be a string' })
-        .trim()
+        .string()
         .min(3, { message: 'Coupon code must be at least 3 characters' })
         .max(20, { message: 'Coupon code cannot exceed 20 characters' })
-        .transform((s) => s.toUpperCase()),
-
-      discountType: z.enum(['percentage', 'flat'], {
-        message: 'Discount type must be "percentage" or "flat"',
-      }),
-
-      discountValue: z
-        .number({ message: 'Discount value must be a number' })
-        .min(0.01, { message: 'Discount value must be greater than 0' }),
-
-      minPurchase: z
-        .number({ message: 'minPurchase must be a number' })
-        .min(0, { message: 'Minimum purchase must be a non-negative number' })
         .optional(),
-
-      maxDiscount: z
-        .number({ message: 'maxDiscount must be a number' })
-        .min(0.01, { message: 'Max discount must be greater than 0' })
+      couponType: z
+        .enum(couponType, {
+          message: 'Coupon type must be one of: flat, percentage, free_shipping, bxgy',
+        })
         .optional(),
-
-      startDate: z.coerce.date({ message: 'Start date must be a valid date' }),
-      endDate: z.coerce.date({ message: 'End date must be a valid date' }),
-
-      isActive: z.boolean({ message: 'isActive must be a boolean' }).optional().default(true),
+      couponValue: z.number().optional(),
+      minOrderAmount: z
+        .number()
+        .positive({ message: 'Minimum order amount must be greater than 0' })
+        .optional(),
+      maxCouponAmount: z
+        .number()
+        .positive({ message: 'Maximum discount amount must be greater than 0' })
+        .optional(),
+      usageLimit: z
+        .number()
+        .int({ message: 'Usage limit must be an integer' })
+        .positive({ message: 'Usage limit must be greater than 0' })
+        .optional(),
+      perUserLimit: z
+        .number()
+        .int({ message: 'Per-user limit must be an integer' })
+        .positive({ message: 'Per-user limit must be greater than 0' })
+        .optional(),
+      startDate: z
+        .preprocess(
+          (val) => {
+            if (!val) return undefined;
+            const d = new Date(val as string);
+            return isNaN(d.getTime()) ? undefined : d;
+          },
+          z.date({ error: 'Invalid start date format' }),
+        )
+        .optional(),
+      endDate: z
+        .preprocess(
+          (val) => {
+            if (!val) return undefined;
+            const d = new Date(val as string);
+            return isNaN(d.getTime()) ? undefined : d;
+          },
+          z.date({ error: 'Invalid end date format' }),
+        )
+        .optional(),
+      shop: objectIdSchema.nonempty('Shop is is required'),
+      isActive: z.boolean().optional(),
     }),
   })
-  .superRefine((data, ctx) => {
-    const body = data.body;
-
-    // startDate < endDate
-    if (body.startDate && body.endDate && +body.endDate <= +body.startDate) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['body', 'endDate'],
-        message: 'End date must be after start date',
-      });
-    }
-
-    // If percentage type
-    if (body.discountType === 'percentage') {
-      if (body.discountValue > 100) {
-        ctx.addIssue({
-          code: 'custom',
-          path: ['body', 'discountValue'],
-          message: 'For percentage discount, discountValue cannot exceed 100',
-        });
-      }
-
-      if (body.maxDiscount === undefined) {
-        ctx.addIssue({
-          code: 'custom',
-          path: ['body', 'maxDiscount'],
-          message: 'maxDiscount is required when discountType is "percentage"',
-        });
-      } else if (body.maxDiscount <= 0) {
-        ctx.addIssue({
-          code: 'custom',
-          path: ['body', 'maxDiscount'],
-          message: 'maxDiscount must be greater than 0',
-        });
-      }
-    }
-  });
+  .refine(
+    (data) => !data.body.startDate || !data.body.endDate || data.body.startDate < data.body.endDate,
+    { message: 'End date must be after start date', path: ['body', 'endDate'] },
+  )
+  .refine(
+    (data) =>
+      data.body.couponType !== 'percentage' ||
+      data.body.couponValue === undefined ||
+      (data.body.couponValue > 0 && data.body.couponValue <= 100),
+    { message: 'Percentage discount must be between 1 and 100', path: ['body', 'couponValue'] },
+  )
+  .refine(
+    (data) =>
+      data.body.couponType !== 'flat' ||
+      data.body.couponValue === undefined ||
+      data.body.couponValue > 0,
+    { message: 'Flat discount must be greater than 0', path: ['body', 'couponValue'] },
+  );
 
 const updateCouponValidationSchema = z
   .object({
     body: z.object({
       code: z
-        .string({ message: 'Coupon code must be a string' })
-        .trim()
+        .string()
         .min(3, { message: 'Coupon code must be at least 3 characters' })
         .max(20, { message: 'Coupon code cannot exceed 20 characters' })
-        .transform((s) => s.toUpperCase())
         .optional(),
 
-      discountType: z
-        .enum(['percentage', 'flat'], {
-          message: 'Discount type must be "percentage" or "flat"',
+      type: z
+        .enum(couponType, {
+          message: 'Coupon type must be one of: flat, percentage, free_shipping, bxgy',
         })
         .optional(),
 
-      discountValue: z
-        .number({ message: 'Discount value must be a number' })
-        .min(0.01, { message: 'Discount value must be greater than 0' })
+      discountValue: z.number().optional(),
+
+      minOrderAmount: z
+        .number()
+        .positive({ message: 'Minimum order amount must be greater than 0' })
         .optional(),
 
-      minPurchase: z
-        .number({ message: 'minPurchase must be a number' })
-        .min(0, { message: 'Minimum purchase must be a non-negative number' })
+      maxDiscountAmount: z
+        .number()
+        .positive({
+          message: 'Maximum discount amount must be greater than 0',
+        })
         .optional(),
 
-      maxDiscount: z
-        .number({ message: 'maxDiscount must be a number' })
-        .min(0.01, { message: 'Max discount must be greater than 0' })
+      usageLimit: z
+        .number()
+        .int({ message: 'Usage limit must be an integer' })
+        .positive({ message: 'Usage limit must be greater than 0' })
         .optional(),
 
-      startDate: z.coerce.date({ message: 'Start date must be a valid date' }).optional(),
-      endDate: z.coerce.date({ message: 'End date must be a valid date' }).optional(),
+      perUserLimit: z
+        .number()
+        .int({ message: 'Per-user limit must be an integer' })
+        .positive({ message: 'Per-user limit must be greater than 0' })
+        .optional(),
 
-      isActive: z.boolean({ message: 'isActive must be a boolean' }).optional(),
+      startDate: z
+        .preprocess(
+          (val) => {
+            const d = new Date(val as string);
+            return isNaN(d.getTime()) ? undefined : d;
+          },
+          z.date({ error: 'Start date must be a valid date' }),
+        )
+        .optional(),
+
+      endDate: z
+        .preprocess(
+          (val) => {
+            const d = new Date(val as string);
+            return isNaN(d.getTime()) ? undefined : d;
+          },
+          z.date({ error: 'End date must be a valid date' }),
+        )
+        .optional(),
+
+      isActive: z.boolean().optional(),
     }),
   })
-  .superRefine((data, ctx) => {
-    const body = data.body;
-
-    // ✅ startDate < endDate
-    if (body.startDate && body.endDate && +body.endDate <= +body.startDate) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['body', 'endDate'],
-        message: 'End date must be after start date',
-      });
-    }
-
-    // ✅ If percentage type
-    if (body.discountType === 'percentage') {
-      if (body.discountValue && body.discountValue > 100) {
-        ctx.addIssue({
-          code: 'custom',
-          path: ['body', 'discountValue'],
-          message: 'For percentage discount, discountValue cannot exceed 100',
-        });
-      }
-
-      if (body.maxDiscount === undefined) {
-        ctx.addIssue({
-          code: 'custom',
-          path: ['body', 'maxDiscount'],
-          message: 'maxDiscount is required when discountType is "percentage"',
-        });
-      } else if (body.maxDiscount <= 0) {
-        ctx.addIssue({
-          code: 'custom',
-          path: ['body', 'maxDiscount'],
-          message: 'maxDiscount must be greater than 0',
-        });
-      }
-    }
-  });
+  .refine(
+    (data) =>
+      !(data.body.startDate && data.body.endDate) || data.body.startDate < data.body.endDate,
+    {
+      message: 'End date must be after start date',
+      path: ['body', 'endDate'],
+    },
+  )
+  // Percentage discount validation
+  .refine(
+    (data) =>
+      data.body.type !== 'percentage' ||
+      data.body.discountValue === undefined ||
+      (data.body.discountValue > 0 && data.body.discountValue <= 100),
+    {
+      message: 'Percentage discount must be between 1 and 100',
+      path: ['body', 'discountValue'],
+    },
+  )
+  // Flat discount validation
+  .refine(
+    (data) =>
+      data.body.type !== 'flat' ||
+      data.body.discountValue === undefined ||
+      data.body.discountValue > 0,
+    {
+      message: 'Flat discount must be greater than 0',
+      path: ['body', 'discountValue'],
+    },
+  );
 
 export const CouponValidation = {
   createCouponValidationSchema,

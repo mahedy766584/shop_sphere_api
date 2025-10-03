@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Schema, model } from 'mongoose';
 
+import { couponType } from './coupon.constant.js';
 import type { TCoupon } from './coupon.interface.js';
 
 const couponSchema = new Schema<TCoupon>(
@@ -15,35 +16,38 @@ const couponSchema = new Schema<TCoupon>(
       maxlength: [20, 'Coupon code cannot exceed 20 characters'],
     },
 
-    discountType: {
+    couponType: {
       type: String,
       enum: {
-        values: ['percentage', 'flat'],
-        message: 'Discount type must be either "percentage" or "flat"',
+        values: couponType,
+        message: 'Coupon type must be one of: flat, percentage, free_shipping, bxgy',
       },
-      required: [true, 'Discount type is required'],
+      required: [true, 'Coupon type is required'],
     },
 
-    discountValue: {
+    couponValue: {
       type: Number,
-      required: [true, 'Discount value is required'],
       min: [1, 'Discount value must be at least 1'],
     },
 
-    minPurchase: {
+    minOrderAmount: {
       type: Number,
-      min: [0, 'Minimum purchase must be a positive number'],
+      min: [0, 'Minimum order amount must be greater than or equal to 0'],
     },
 
-    maxDiscount: {
+    maxCouponAmount: {
       type: Number,
-      min: [0, 'Maximum discount must be a positive number'],
-      validate: {
-        validator: function (this: any, value: number) {
-          return this.discountType === 'percentage' ? value > 0 : true;
-        },
-        message: 'Max discount is only required for percentage discount type',
-      },
+      min: [0, 'Maximum discount must be greater than or equal to 0'],
+    },
+
+    usageLimit: {
+      type: Number,
+      min: [1, 'Usage limit must be at least 1'],
+    },
+
+    perUserLimit: {
+      type: Number,
+      min: [1, 'Per-user limit must be at least 1'],
     },
 
     startDate: {
@@ -73,6 +77,32 @@ const couponSchema = new Schema<TCoupon>(
       required: [true, 'CreatedBy is required'],
       immutable: true,
     },
+
+    shop: {
+      type: Schema.Types.ObjectId,
+      ref: 'Shop',
+      required: [true, 'Shop is required'],
+      immutable: true,
+    },
+
+    usedCount: {
+      type: Number,
+      default: 0,
+    },
+
+    userUsed: [
+      {
+        userId: {
+          type: Schema.Types.ObjectId,
+          ref: 'User',
+          required: true,
+        },
+        count: {
+          type: Number,
+          default: 0,
+        },
+      },
+    ],
   },
   {
     timestamps: true,
@@ -80,6 +110,6 @@ const couponSchema = new Schema<TCoupon>(
   },
 );
 
-couponSchema.index({ code: 1 });
+couponSchema.index({ code: 1 }, { unique: true });
 
-export const Coupon = model('Coupon', couponSchema);
+export const Coupon = model<TCoupon>('Coupon', couponSchema);
