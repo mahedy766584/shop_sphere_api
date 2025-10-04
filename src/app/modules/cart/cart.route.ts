@@ -6,38 +6,32 @@ import { Router } from 'express';
 import { CartController } from './cart.controller.js';
 import { CartValidation } from './cart.validation.js';
 
-const router = Router();
+const route = Router();
 
-router.post(
-  '/add-cart',
+route.post(
+  '/add-to-cart',
   auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.customer),
-  validateRequest(CartValidation.addCartValidationSchema),
-  CartController.addItemToCart,
+  validateRequest(CartValidation.CreateCartValidationSchema),
+  CartController.addProductInCart,
 );
 
-router.patch(
-  '/update-quantity',
-  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.customer),
-  validateRequest(CartValidation.removeItemCartQuantityValidationSchema),
-  CartController.removeItemCartQuantity,
-);
-
-router.delete(
-  '/:productId',
-  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.customer),
-  CartController.removeItemFromCart,
-);
-
-router.get(
+route.get(
   '/',
   auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.customer),
-  CartController.getMyCart,
+  CartController.getUserCart,
 );
 
-router.delete(
-  '/clear',
+route.patch(
+  '/:cartId',
   auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.customer),
-  CartController.clearCart,
+  validateRequest(CartValidation.cartQuantityValidationSchema),
+  CartController.updateCartQuantity,
 );
 
-export const CartRoutes = router;
+route.delete(
+  '/:cartId',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.customer),
+  CartController.deleteSingleCart,
+);
+
+export const CartRoutes = route;

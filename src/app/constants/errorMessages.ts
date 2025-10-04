@@ -65,6 +65,7 @@ export const ErrorMessages = {
     AVAILABLE: (field: string | number) => `Only ${field} items are available for this product.`,
     QUANTITY_EXCEEDS: (stock: number) => `Quantity exceeds available stock (${stock}).`,
     NO_SHOP: 'Product does not belong to any shop.',
+    NOT_ACTIVE: 'This product not active',
   },
 
   SHOP: {
@@ -92,6 +93,11 @@ export const ErrorMessages = {
     MAX_LENGTH: (field: string, length: number) => `${field} must not exceed ${length} characters.`,
     INVALID_VALUE: (field: string) => `${field} has an invalid value.`,
     NOT_ALLOWED: (field: string) => `You are not allowed to update this field: ${field}`,
+  },
+
+  CART: {
+    EXISTS: 'This product already exit your cart',
+    NOT_FOUND: 'This cart not found',
   },
 
   SERVER: {

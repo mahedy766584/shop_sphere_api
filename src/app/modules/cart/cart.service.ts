@@ -1,153 +1,84 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { redlock } from '@shared/redlock.js';
 import status from 'http-status';
-import { Types } from 'mongoose';
-import type { Lock } from 'redlock';
 
 import { ErrorMessages } from '@constants/errorMessages.js';
 
 import AppError from '@errors/appError.js';
 
-import { calculateTotals, validateProduct } from './cart.constant.js';
+import { checkProductStatus } from '@utils/guards/checkProductStatus.js';
+import { checkUserStatus } from '@utils/guards/checkUserStatus.js';
+
+import type { TCart } from './cart.interface.js';
 import { Cart } from './cart.model.js';
 
-// add / update cart
-const addItemToCart = async (userId: string, items: { product: string; quantity: number }[]) => {
-  const lockKey = `lock:cart:${userId}`;
-  let lock: Lock | undefined;
+const addProductInCart = async (userId: string, payload: TCart) => {
+  const user = await checkUserStatus(userId);
+  const product = await checkProductStatus(payload.product.toString());
 
-  try {
-    lock = await redlock.acquire([lockKey], 2000);
+  const existCart = await Cart.findOne({ product: product?._id, user: user?._id });
 
-    const itemsArray = Array.isArray(items) ? items : [items];
-
-    let cart = await Cart.findOne({ user: new Types.ObjectId(userId) });
-
-    if (!cart) {
-      const newItems = [];
-      for (const item of itemsArray) {
-        const { product, priceToUse } = await validateProduct(item.product, item.quantity);
-        newItems.push({
-          product: product._id,
-          quantity: item.quantity,
-          originalPrice: product.price,
-          priceAtAddTime: priceToUse,
-        });
-      }
-
-      cart = await Cart.create({
-        user: new Types.ObjectId(userId),
-        items: newItems,
-      });
-    } else {
-      for (const item of itemsArray) {
-        const { product, priceToUse } = await validateProduct(item.product, item.quantity);
-
-        const cartExisting = cart.items.find(
-          (i: any) => i.product.toString() === product._id.toString(),
-        );
-
-        if (cartExisting) {
-          if (cartExisting.quantity + item.quantity > product.stock) {
-            throw new AppError(
-              status.BAD_REQUEST,
-              ErrorMessages.PRODUCT.QUANTITY_EXCEEDS(product.stock),
-            );
-          }
-          cartExisting.quantity += item.quantity;
-          cartExisting.originalPrice = product.price;
-          cartExisting.priceAtAddTime = priceToUse;
-        } else {
-          cart.items.push({
-            product: product._id,
-            quantity: item.quantity,
-            originalPrice: product.price,
-            priceAtAddTime: priceToUse,
-          });
-        }
-      }
-
-      await cart.save();
-    }
-
-    // ✅ runtime এ totals হিসাব করা হচ্ছে
-    const { beforeDiscountTotal, discountTotal, totalAmount } = calculateTotals(cart.items);
-
-    return {
-      user: cart.user,
-      items: cart.items,
-      beforeDiscountTotal,
-      discountTotal,
-      totalAmount,
-    };
-  } finally {
-    if (lock) await (lock as any).release();
+  if (existCart) {
+    throw new AppError(status.BAD_REQUEST, ErrorMessages.CART.EXISTS);
   }
-};
 
-const removeItemCartQuantity = async (userId: string, productId: string, newQuantity: number) => {
-  const lockKey = `lock:cart:${userId}`;
-  let lock: Lock | undefined;
-
-  try {
-    lock = await redlock.acquire([lockKey], 2000);
-
-    const cart = await Cart.findOne({ user: new Types.ObjectId(userId) });
-
-    if (!cart) throw new AppError(status.NOT_FOUND, ErrorMessages.PRODUCT.NOT_FOUND);
-
-    const item = cart.items.find((i: any) => i.product.toString() === productId);
-    if (!item) throw new AppError(status.NOT_FOUND, 'Item not in cart');
-
-    if (newQuantity === 0) {
-      cart.items = cart.items.filter((i: any) => i.product.toString() !== productId);
-    } else {
-      const { product, priceToUse } = await validateProduct(productId, newQuantity);
-      if (newQuantity > product.stock) {
-        throw new AppError(status.BAD_REQUEST, ErrorMessages.PRODUCT.AVAILABLE(product.stock));
-      }
-
-      item.quantity = newQuantity;
-      item.originalPrice = product.price;
-      item.priceAtAddTime = priceToUse;
-    }
-
-    await cart.save();
-
-    const { beforeDiscountTotal, discountTotal, totalAmount } = calculateTotals(cart.items);
-
-    return {
-      user: cart.user,
-      item: cart.items,
-      beforeDiscountTotal,
-      discountTotal,
-      totalAmount,
-    };
-  } finally {
-    if (lock) await (lock as any).release();
+  if (payload.quantity && payload.quantity < 0) {
+    throw new AppError(status.BAD_REQUEST, 'Quantity is must be gather then 0');
   }
+
+  const priceAtAddTime = product.price;
+  const totalPrice = payload?.quantity ? priceAtAddTime * payload.quantity : priceAtAddTime;
+
+  const result = await Cart.create({
+    ...payload,
+    user: user._id,
+    priceAtAddTime,
+    quantity: payload.quantity || 1,
+    totalAmount: totalPrice,
+  });
+
+  return result;
 };
 
-const removeItemFromCart = async (userId: string, productId: string) => {
-  return removeItemCartQuantity(userId, productId, 0);
+const getUserCart = async (userId: string) => {
+  const user = await checkUserStatus(userId);
+  const result = await Cart.find({ user: user._id })
+    .populate('user', 'userName name.firstName name.lastName')
+    .populate('product');
+  return { totalCart: result.length, result };
 };
 
-const getMyCart = async (userId: string) => {
-  return await Cart.findOne({ user: userId }).populate('items.product');
+const updateCartQuantity = async (userId: string, cartId: string, quantity: number) => {
+  const user = await checkUserStatus(userId);
+
+  const cart = await Cart.findOne({ _id: cartId, user: user });
+
+  if (!cart) {
+    throw new AppError(status.NOT_FOUND, ErrorMessages.CART.NOT_FOUND);
+  }
+
+  cart.quantity = quantity;
+  cart.totalAmount = cart.priceAtAddTime * quantity;
+
+  await cart.save();
+
+  return cart;
 };
 
-const clearCart = async (userId: string) => {
-  return await Cart.findOneAndUpdate(
-    { user: userId },
-    { $set: { items: [], totalAmount: 0 } },
-    { new: true },
-  );
+const deleteSingleCart = async (cartId: string, userId: string) => {
+  const user = await checkUserStatus(userId);
+
+  const cart = await Cart.findOne({ _id: cartId, user: user });
+
+  if (!cart) {
+    throw new AppError(status.NOT_FOUND, ErrorMessages.CART.NOT_FOUND);
+  }
+
+  const result = await Cart.findByIdAndDelete(cartId);
+  return result;
 };
 
 export const CartService = {
-  addItemToCart,
-  removeItemCartQuantity,
-  removeItemFromCart,
-  getMyCart,
-  clearCart,
+  addProductInCart,
+  getUserCart,
+  updateCartQuantity,
+  deleteSingleCart,
 };
