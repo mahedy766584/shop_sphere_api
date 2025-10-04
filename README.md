@@ -28,3 +28,10 @@ A production-ready, professional Multi-Seller E-commerce Backend built with Node
 - [Project Showcase — How to present this to recruiters](#project-showcase--how-to-present-this-to-recruiters)
 - [Troubleshooting & FAQ](#troubleshooting--faq)
 - [License](#license)
+
+
+## About
+
+This repository contains the backend server for a multi-seller e-commerce platform. It is built with pragmatic production practices in mind: proper authentication, role-based access control, audit logging, notification system, seller shops, product inventory, cart/order flows, and extensible modular code structure.
+
+This project is tailored to be a hire-worthy portfolio piece for backend developers and showcases real-world concerns like security, observability, and multi-tenant-ish seller isolation.
