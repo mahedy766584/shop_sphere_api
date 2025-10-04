@@ -15,6 +15,13 @@ router.post(
   CouponController.createCouponIntoDB,
 );
 
+router.post(
+  '/apply',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.customer),
+  validateRequest(CouponValidation.applyCouponValidation),
+  CouponController.applyCoupon,
+);
+
 router.get(
   '/',
   auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.seller, USER_ROLE.customer),

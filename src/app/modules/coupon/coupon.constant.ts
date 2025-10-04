@@ -11,6 +11,7 @@ export const allowedFields: (keyof TCoupon)[] = [
   'startDate',
   'endDate',
   'isActive',
+  'shop',
 ];
 
 export const couponType = ['flat', 'percentage', 'free_shipping', 'bxgy'];

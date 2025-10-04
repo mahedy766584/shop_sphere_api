@@ -174,7 +174,27 @@ const updateCouponValidationSchema = z
     },
   );
 
+const applyCouponValidation = z.object({
+  body: z.object({
+    code: z
+      .string({
+        error: 'Coupon code is required',
+      })
+      .trim()
+      .min(3, { message: 'Coupon code must be at least 3 characters long' })
+      .max(20, { message: 'Coupon code cannot exceed 20 characters' }),
+
+    orderAmount: z
+      .number({
+        error: 'Order amount is required',
+      })
+      .positive({ message: 'Order amount must be greater than 0' })
+      .max(1000000, { message: 'Order amount cannot exceed 1,000,000' }),
+  }),
+});
+
 export const CouponValidation = {
   createCouponValidationSchema,
   updateCouponValidationSchema,
+  applyCouponValidation,
 };
