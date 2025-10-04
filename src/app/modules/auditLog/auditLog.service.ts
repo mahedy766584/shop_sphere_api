@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import QueryBuilder from 'app/builder/QueryBuilder.js';
 import type { ClientSession, Types } from 'mongoose';
 
 import type { TAuditLog } from './auditLog.interface.js';
@@ -53,9 +54,19 @@ class AuditService {
     );
   }
 
-  static async findAll(filter: any = {}, opts: { limit?: number; skip?: number; sort?: any } = {}) {
-    const { limit = 50, skip = 0, sort = { performedAt: -1 } } = opts;
-    return AuditLog.find(filter).sort(sort).skip(skip).limit(limit).lean();
+  static async findAllAuditLog(userId: string | Types.ObjectId, query: Record<string, unknown>) {
+    const auditLogQueryBuilder = new QueryBuilder(AuditLog.find({ performedBy: userId }), query)
+      .search(['resourceType', 'action'])
+      .filter()
+      .sort()
+      .paginate()
+      .fields();
+
+    const result = await auditLogQueryBuilder.modelQuery.lean();
+
+    const meta = await auditLogQueryBuilder.countTotal();
+
+    return { meta, result };
   }
 
   static async findById(id: string) {

@@ -1,3 +1,4 @@
+import { AuditLogRoutes } from '@modules/auditLog/auditLog.route.js';
 import { CartRoutes } from '@modules/cart/cart.route.js';
 import { CategoryRoutes } from '@modules/category/category.route.js';
 import { CouponRoutes } from '@modules/coupon/coupon.route.js';
@@ -63,6 +64,10 @@ const moduleRoutes = [
   {
     path: '/notifications',
     route: NotificationRoutes,
+  },
+  {
+    path: '/audits',
+    route: AuditLogRoutes,
   },
 ];
 
