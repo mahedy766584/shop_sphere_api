@@ -447,3 +447,14 @@ npm run build
 npm start
 
 ```
+
+## 📡 API Overview
+
+This section provides a **high-level summary of main endpoints**.  
+For complete API documentation, provide a **Postman collection** or **Swagger/OpenAPI file**.
+
+**Base URL:** `/api/v1`
+
+> 🔑 **Authentication:** Use `Authorization: Bearer <accessToken>` header for all protected routes.
+
+---
