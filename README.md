@@ -6,7 +6,7 @@ A production-ready, professional Multi-Seller E-commerce Backend built with Node
 
 * [🧩 About](#-about)
 * [🚀 Key Features](#-key-features)
-* [🛠️ Tech Stack](#🛠️-tech-stack)
+* [🛠️ Tech Stack](#-🛠️-tech-stack)
 * [🏗️ Architecture & Folder Structure](#-architecture--folder-structure)
 * [⚙️ Getting Started (Step-by-step)](#-getting-started-step-by-step)
 
