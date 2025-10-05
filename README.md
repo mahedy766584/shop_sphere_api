@@ -148,7 +148,7 @@ This backend server is built using a modern, scalable, and industry-ready techno
 
 ---
 
-## 🏗️ Architecture & Folder Structure
+## Architecture and Folder Structure
 
 A **clean, layered, and modular architecture** is followed to ensure scalability, maintainability, and developer productivity. Each responsibility is clearly separated, making the codebase easier to extend, debug, and collaborate on in team environments.
 
