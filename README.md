@@ -548,3 +548,26 @@ For complete API documentation, provide a **Postman collection**.
 | `/discount/:productId/sync` | **GET** | Sync product price with active discount for a given product. |
 
 
+## 🔔 Notification API
+
+| Endpoint |   Method   | Description |
+|----------|:----------:|-------------|
+| `/notifications` | **GET** | Fetch all notifications of the authenticated user. |
+| `/notifications/:notificationId` | **PATCH** | Mark a specific notification as read. |
+| `/notifications/mark/all-read` | **PATCH** | Mark all notifications of the user as read. |
+| `/notifications/:notificationId` | **DELETE** | Delete a specific notification. |
+| `/notifications` | **DELETE** | Prune (remove) old notifications in bulk. |
+
+
+## 📦 Order API
+
+| Endpoint |   Method   | Description |
+|----------|:----------:|-------------|
+| `/orders/place-order` | **POST** | Place a new order. Requires authentication and validation of order details. |
+| `/orders/payment/stripe` | **POST** | Initiate a Stripe payment for an order. Validates payment details before processing. |
+| `/orders/webhook/payment` | **POST** | Stripe webhook endpoint to confirm payment. Should be secured and verified. |
+| `/orders/:orderId/ship` | **POST** | Mark an order as **shipped**. Accessible only by sellers. Requires validation of shipment details. |
+| `/orders/:orderId/deliver` | **POST** | Mark an order as **delivered**. Can be performed by authenticated roles (admin, seller, customer). |
+| `/orders/:invoiceId/cancel` | **POST** | Cancel an order. Only the customer who placed the order can cancel. |
+
+
