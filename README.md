@@ -491,10 +491,10 @@ For complete API documentation, provide a **Postman collection**.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| **POST** | `/v1/cart/add-to-cart` | Add a product to the user’s cart. Requires validation of product & quantity. |
-| **GET** | `/v1/cart` | Get the authenticated user’s cart with all items. |
-| **PATCH** | `/v1/cart/:cartId` | Update the quantity of a specific cart item. Validation ensures positive integer values. |
-| **DELETE** | `/v1/cart/:cartId` | Remove a specific item from the user’s cart. |
+| **POST** | `/cart/add-to-cart` | Add a product to the user’s cart. Requires validation of product & quantity. |
+| **GET** | `/cart` | Get the authenticated user’s cart with all items. |
+| **PATCH** | `/cart/:cartId` | Update the quantity of a specific cart item. Validation ensures positive integer values. |
+| **DELETE** | `/cart/:cartId` | Remove a specific item from the user’s cart. |
 
 
 ### ⚡ Notes
