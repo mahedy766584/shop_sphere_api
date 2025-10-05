@@ -83,6 +83,8 @@ This project is tailored to be a hire-worthy portfolio piece for backend develop
 - **Unit & Integration Tests** — Jest + Supertest setup for API testing.  
 - **CI/CD Ready** — easy integration with GitHub Actions for automated lint, build, and test pipelines.  
 
+---
+
 ## 🛠️ Tech Stack
 
 This backend server is built using a modern, scalable, and industry-ready technology stack, ensuring performance, security, and maintainability.
