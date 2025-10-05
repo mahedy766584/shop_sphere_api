@@ -479,3 +479,12 @@ For complete API documentation, provide a **Postman collection**.
 * All protected endpoints require `Authorization:<token>` header.
 
 ---
+
+### 📜 Audit Logs
+
+| Method | Endpoint | Roles Allowed | Description |
+|--------|----------|---------------|-------------|
+| GET | `/audit-logs` | `superAdmin`, `admin`, `seller` | Fetch all audit logs |
+| GET | `/audit-logs/:id` | `superAdmin`, `admin`, `seller` | Fetch details of a specific audit log by ID |
+
+---
