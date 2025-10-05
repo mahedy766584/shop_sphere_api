@@ -112,7 +112,7 @@ This backend server is built using a modern, scalable, and industry-ready techno
 
 ### **Validation & Data Integrity**
 
-* **Zod** (preferred) / **Joi** — runtime schema validation for request payloads.
+* **Zod** (preferred) — runtime schema validation for request payloads.
 * Enforces type-safety and prevents invalid data persistence.
 
 ### **Caching & Performance**
@@ -140,9 +140,167 @@ This backend server is built using a modern, scalable, and industry-ready techno
 * **GitHub Actions** — automated pipelines for linting, testing, building, and deployment.
 * Supports multi-environment workflows (dev, staging, production).
 
-### **Containerization & Deployment**
-
-* **Docker & Docker Compose** — containerized environment for portability and consistency.
-* Production-ready setup for scalable deployments on cloud platforms (AWS, GCP, Azure, or DigitalOcean).
 
 ---
+
+
+## 🏗️ Architecture & Folder Structure
+
+A **clean, layered, and modular architecture** is followed to ensure scalability, maintainability, and developer productivity. Each responsibility is clearly separated, making the codebase easier to extend, debug, and collaborate on in team environments.
+
+### 🔑 Key Principles
+
+* **Separation of Concerns** — each layer (controller, service, model, etc.) has a single responsibility.
+* **Scalability in Mind** — features are modular, allowing independent extension without breaking existing flows.
+* **Consistency** — naming conventions, folder hierarchy, and coding patterns follow industry best practices.
+* **Testability** — architecture supports unit and integration testing at every layer.
+
+### 📂 Folder Structure
+
+```
+src/
+├── app/                        
+│   ├── builder/                # Query builders (searching, filtering, sorting, pagination, etc.)
+│   ├── config/                 # Environment & third-party configs (DB, JWT, Redis, Cloudinary, etc.)
+│   ├── constants/              # Centralized constants, enums & static values
+│   ├── db/                     # Database connection, migrations, seeders
+│   ├── errors/                 # Custom error classes & centralized error handling
+│   ├── interfaces/             # Global TypeScript interfaces & types
+│   ├── middlewares/            # Global middlewares (auth, validation, logging, rate-limiting, etc.)
+│   ├── modules/                # Domain-driven, feature-based modules
+│   │   ├── auditLog/           
+│   │   │   ├── auditLog.controller.ts   # Handles request/response mapping
+│   │   │   ├── auditLog.interface.ts    # TypeScript interfaces/types for this module
+│   │   │   ├── auditLog.model.ts        # Mongoose schema & model
+│   │   │   ├── auditLog.route.ts        # Express routes
+│   │   │   ├── auditLog.service.ts      # Business logic & DB interaction
+│   │   │   └── auditLog.validation.ts   # Module-specific validation (Zod/Joi)
+│   │   ├── auth/              
+│   │   │   ├── auth.controller.ts
+│   │   │   ├── auth.interface.ts
+│   │   │   ├── auth.model.ts
+│   │   │   ├── auth.route.ts
+│   │   │   ├── auth.service.ts
+│   │   │   ├── auth.utils.ts            # Auth-specific helpers (token, hashing, etc.)
+│   │   │   ├── auth.validation.ts
+│   │   │   ├── verification.controller.ts
+│   │   │   ├── verification.service.ts
+│   │   │   └── verification.validation.ts
+│   │   ├── cart/
+│   │   │   ├── cart.constant.ts         # Module-specific constants
+│   │   │   ├── cart.controller.ts
+│   │   │   ├── cart.interface.ts
+│   │   │   ├── cart.model.ts
+│   │   │   ├── cart.route.ts
+│   │   │   ├── cart.service.ts
+│   │   │   └── cart.validation.ts
+│   │   ├── category/
+│   │   │   ├── category.controller.ts
+│   │   │   ├── category.interface.ts
+│   │   │   ├── category.model.ts
+│   │   │   ├── category.route.ts
+│   │   │   ├── category.service.ts
+│   │   │   └── category.validation.ts
+│   │   ├── coupon/
+│   │   │   ├── coupon.constant.ts
+│   │   │   ├── coupon.controller.ts
+│   │   │   ├── coupon.interface.ts
+│   │   │   ├── coupon.model.ts
+│   │   │   ├── coupon.route.ts
+│   │   │   ├── coupon.service.ts
+│   │   │   ├── coupon.utils.ts
+│   │   │   └── coupon.validation.ts
+│   │   ├── discount/
+│   │   │   ├── discount.constant.ts
+│   │   │   ├── discount.controller.ts
+│   │   │   ├── discount.interface.ts
+│   │   │   ├── discount.model.ts
+│   │   │   ├── discount.route.ts
+│   │   │   ├── discount.service.ts
+│   │   │   ├── discount.utils.ts
+│   │   │   └── discount.validation.ts
+│   │   ├── notification/
+│   │   │   ├── notification.constant.ts
+│   │   │   ├── notification.controller.ts
+│   │   │   ├── notification.interface.ts
+│   │   │   ├── notification.model.ts
+│   │   │   ├── notification.route.ts
+│   │   │   ├── notification.service.ts
+│   │   │   ├── notification.utils.ts
+│   │   │   └── notification.validation.ts
+│   │   ├── order/
+│   │   │   ├── order.constant.ts
+│   │   │   ├── order.controller.ts
+│   │   │   ├── order.interface.ts
+│   │   │   ├── order.model.ts
+│   │   │   ├── order.route.ts
+│   │   │   ├── order.service.ts
+│   │   │   ├── order.utils.ts
+│   │   │   └── order.validation.ts
+│   │   ├── product/
+│   │   │   ├── product.constant.ts
+│   │   │   ├── product.controller.ts
+│   │   │   ├── product.interface.ts
+│   │   │   ├── product.model.ts
+│   │   │   ├── product.route.ts
+│   │   │   ├── product.service.ts
+│   │   │   └── product.validation.ts
+│   │   ├── review/
+│   │   │   ├── review.constant.ts
+│   │   │   ├── review.controller.ts
+│   │   │   ├── review.interface.ts
+│   │   │   ├── review.model.ts
+│   │   │   ├── review.route.ts
+│   │   │   ├── review.service.ts
+│   │   │   └── review.validation.ts
+│   │   ├── seller/
+│   │   │   ├── seller.constant.ts
+│   │   │   ├── seller.controller.ts
+│   │   │   ├── seller.interface.ts
+│   │   │   ├── seller.model.ts
+│   │   │   ├── seller.route.ts
+│   │   │   ├── seller.service.ts
+│   │   │   └── seller.validation.ts
+│   │   ├── shop/
+│   │   │   ├── shop.constant.ts
+│   │   │   ├── shop.controller.ts
+│   │   │   ├── shop.interface.ts
+│   │   │   ├── shop.model.ts
+│   │   │   ├── shop.route.ts
+│   │   │   ├── shop.service.ts
+│   │   │   └── shop.validation.ts
+│   │   ├── user/
+│   │   │   ├── user.constant.ts
+│   │   │   ├── user.controller.ts
+│   │   │   ├── user.interface.ts
+│   │   │   ├── user.model.ts
+│   │   │   ├── user.route.ts
+│   │   │   ├── user.service.ts
+│   │   │   ├── user.utils.ts
+│   │   │   └── user.validation.ts
+│   │   └── ...                 
+│   │
+│   ├── routes/                  # Global routes aggregator (import & combine all module routes)
+│   ├── shared/                  # Shared utilities (email sender, storage, cache, common helpers)
+│   └── utils/                   # Core utilities (formatters, token generator, DB transactions, etc.)
+│
+├── uploads/                     # File uploads (if using local storage)
+├── app.ts                       # Express app config
+└── server.ts                    # Server bootstrap (listen, clustering, graceful shutdown)
+
+
+```
+
+### ⚙️ Flow of Responsibility
+
+1. **Route Layer** — Defines REST endpoints, applies validation (Zod), and delegates requests to the appropriate controller.
+2. **Controller Layer** — Accepts validated requests, orchestrates the flow by calling services, and formats consistent API responses.
+3. **Service Layer** — Encapsulates the **business logic**; reusable, testable, and independent of HTTP or database concerns.
+4. **Model Layer (Mongoose)** — Manages data persistence: schema definitions, relationships, queries, and transactions.
+5. **Middleware Layer** — Handles cross-cutting concerns such as authentication, authorization, logging, error handling, and rate-limiting.
+6. **Utility & Shared Layer** — Provides helper functions, adapters (e.g., cache, email, storage), and shared services across modules.
+
+---
+
+This layered architecture is **production-ready** and follows industry best practices for **scalability, maintainability, and testability**.
+It ensures that each responsibility is clearly separated, making the project **extensible, secure, and easy to maintain** in long-term enterprise development cycles.
