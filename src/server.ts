@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-console */
+import seedSuperAdmin from 'app/DB/index.js';
 import type { Server } from 'http';
 import mongoose from 'mongoose';
 
@@ -14,6 +15,7 @@ async function main() {
   try {
     await mongoose.connect(config.database_url as string);
     console.log('✅ Database connected');
+    seedSuperAdmin();
     server = app.listen(port, () => {
       console.log(`✅ Server is running on ${port}`);
     });

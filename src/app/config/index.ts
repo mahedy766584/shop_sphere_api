@@ -27,4 +27,6 @@ export default {
   redis_url: process.env.REDIS_URL,
   cache_ttl: process.env.CACHE_TTL,
   stripe_secret_key: process.env.STRIPE_SECRET_KEY,
+  super_admin_email: process.env.SUPER_ADMIN_EMAIL,
+  super_admin_password: process.env.SUPER_ADMIN_PASSWORD,
 };
