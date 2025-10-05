@@ -304,3 +304,146 @@ src/
 
 This layered architecture is **production-ready** and follows industry best practices for **scalability, maintainability, and testability**.
 It ensures that each responsibility is clearly separated, making the project **extensible, secure, and easy to maintain** in long-term enterprise development cycles.
+
+
+## 🚀 Getting Started
+Follow these steps to set up and run the E-commerce Server locally or in production, following industry standards.
+
+### ✅ Prerequisites
+
+- Before you start, ensure you have the following installed:
+- Node.js v18+ (LTS recommended)
+- npm or yarn (package manager)
+- MongoDB (local instance or MongoDB Atlas)
+
+### 📦 Clone & Install
+
+```
+# 1. Clone repository
+https://github.com/mahedy766584/shop_sphere_api.git
+cd ecommerce-server
+
+# 2. Install dependencies
+npm install
+# or
+yarn install
+
+```
+
+### 🔧 Environment Variables
+
+Create a .env file at the root directory.
+You can copy .env.example as a starting point.
+
+```
+
+# Server
+PORT=5000
+NODE_ENV=development
+
+# Database
+DATABASE_URL=mongodb+srv://<user>:<password>@cluster0.mongodb.net/ecommerce
+
+# Security
+JWT_ACCESS_SECRET=super_strong_secret
+JWT_REFRESH_SECRET=another_strong_secret
+JWT_EMAIL_SECRET=email_secret
+JWT_ACCESS_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=7d
+EMAIL_VERIFICATION_EXPIRES_IN=24h
+PASSWORD_SALT_ROUNDS=10
+
+# Frontend & API
+FRONTEND_URL=http://localhost:3000
+API_BASE_URL=http://localhost:5000/api/v1
+
+# SMTP (Mail)
+SMTP_HOST=smtp.mailtrap.io
+SMTP_PORT=2525
+SMTP_HOST_MAIL=noreply@ecommerce.com
+SMTP_PASS=secure_password
+
+# Cloudinary (Media Uploads)
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+
+# Redis
+REDIS_URL=redis://localhost:6379
+CACHE_TTL=3600
+
+# Stripe (Payments)
+STRIPE_SECRET_KEY=sk_test_xxxxx
+
+
+```
+
+### 🛠️ Config File (src/config/index.ts)
+
+All env variables are centralized for type-safety & maintainability:
+
+```
+
+import dotenv from 'dotenv';
+import path from 'path';
+
+dotenv.config({ path: path.join(process.cwd(), '.env') });
+
+export default {
+  NODE_ENV: process.env.NODE_ENV,
+  port: process.env.PORT,
+  database_url: process.env.DATABASE_URL,
+  password_salt_rounds: process.env.PASSWORD_SALT_ROUNDS,
+
+  // JWT
+  jwt_access_secret: process.env.JWT_ACCESS_SECRET,
+  jwt_email_secret: process.env.JWT_EMAIL_SECRET,
+  jwt_refresh_secret: process.env.JWT_REFRESH_SECRET,
+  jwt_access_expires_in: process.env.JWT_ACCESS_EXPIRES_IN,
+  jwt_refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN,
+  email_verification_expires_in: process.env.EMAIL_VERIFICATION_EXPIRES_IN,
+
+  // Links
+  reset_pass_ui_link: process.env.RESET_PASS_UI_LINK,
+  frontend_url: process.env.FRONTEND_URL,
+  api_base_url: process.env.API_BASE_URL,
+
+  // SMTP
+  smtp_host: process.env.SMTP_HOST,
+  smtp_port: process.env.SMTP_PORT,
+  smtp_host_mail: process.env.SMTP_HOST_MAIL,
+  smtp_pass: process.env.SMTP_PASS,
+
+  // Cloudinary
+  cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
+  cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
+
+  // Redis
+  redis_url: process.env.REDIS_URL,
+  cache_ttl: process.env.CACHE_TTL,
+
+  // Stripe
+  stripe_secret_key: process.env.STRIPE_SECRET_KEY,
+};
+
+```
+
+### 🗄️ Database Setup & Seeding
+
+You can seed initial data (admin, sellers, products) for testing:
+```
+npm run seed
+```
+
+### 🖥️ Run Locally
+
+```
+# Development (hot reload)
+npm run dev
+
+# Production build
+npm run build
+npm start
+
+```
