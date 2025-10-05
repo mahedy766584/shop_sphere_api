@@ -56,7 +56,7 @@ This project is tailored to be a hire-worthy portfolio piece for backend develop
 - **Persistent Shopping Cart** — items remain synced with user sessions.  
 - **Order Workflow Management** — full lifecycle support:  
   `Pending → Processing → Shipped → Delivered → Cancelled`  
-- **Payment-ready model design** — structured to easily integrate payment gateways (Stripe, SSLCommerz, etc.).  
+- **Payment-ready model design** — structured to easily integrate payment gateways (Stripe).  
 
 ### 🔔 Notifications & Audit Logging
 - **Smart Notification System** — persistent and event-driven (order updates, admin alerts, seller approvals).  
