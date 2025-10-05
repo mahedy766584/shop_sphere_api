@@ -83,3 +83,63 @@ This project is tailored to be a hire-worthy portfolio piece for backend develop
 - **Unit & Integration Tests** — Jest + Supertest setup for API testing.  
 - **CI/CD Ready** — easy integration with GitHub Actions for automated lint, build, and test pipelines.  
 
+## 🛠️ Tech Stack
+
+This backend server is built using a modern, scalable, and industry-ready technology stack, ensuring performance, security, and maintainability.
+
+### **Language**
+
+* **TypeScript** — strongly-typed JavaScript for safer, more reliable, and maintainable codebases.
+
+### **Runtime & Framework**
+
+* **Node.js** — event-driven, non-blocking runtime optimized for high-performance APIs.
+* **Express.js** — minimal and flexible web framework for building RESTful APIs.
+
+### **Database & ORM**
+
+* **MongoDB** — NoSQL database optimized for scalability and flexibility.
+* **Mongoose** — ODM for schema validation, relationships, and query optimization.
+
+### **Authentication & Security**
+
+* **JWT (JSON Web Tokens)** — secure access and refresh token strategy.
+* **bcrypt** — robust password hashing for secure credential storage.
+* **Role-based Access Control (RBAC)** — fine-grained authorization system.
+
+### **Validation & Data Integrity**
+
+* **Zod** (preferred) / **Joi** — runtime schema validation for request payloads.
+* Enforces type-safety and prevents invalid data persistence.
+
+### **Caching & Performance**
+
+* **Redis (optional)** — in-memory caching for sessions, rate limiting, and performance optimization.
+
+### **File Storage & Media Handling**
+
+* **Cloudinary (optional)** — cloud-based image hosting & optimization pipeline.
+* **Multer** — secure file uploads with MIME-type validation.
+
+### **Logging & Monitoring**
+
+* **Winston** — structured, configurable logging system.
+* **Morgan** — HTTP request logging middleware for Express.
+* Easily integratable with centralized log management tools (e.g., ELK / Datadog).
+
+### **Testing & Quality Assurance**
+
+* **Jest** — unit and integration test framework.
+* **Supertest** — HTTP assertions for end-to-end API testing.
+
+### **CI/CD & Automation**
+
+* **GitHub Actions** — automated pipelines for linting, testing, building, and deployment.
+* Supports multi-environment workflows (dev, staging, production).
+
+### **Containerization & Deployment**
+
+* **Docker & Docker Compose** — containerized environment for portability and consistency.
+* Production-ready setup for scalable deployments on cloud platforms (AWS, GCP, Azure, or DigitalOcean).
+
+---
