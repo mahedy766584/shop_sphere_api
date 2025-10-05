@@ -472,7 +472,7 @@ For complete API documentation, provide a **Postman collection**.
 | `/auth/verify-email`     | **GET**  | Verify user’s email using verification token          |
 | `/auth/resend-verification` | **POST** | Resend verification email if not verified             |
 
-**Notes:**
+### ⚡ Notes
 
 * Access token is short-lived.  
 * Use refresh token to reissue access token.  
