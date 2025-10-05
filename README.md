@@ -6,33 +6,36 @@ A production-ready, professional Multi-Seller E-commerce Backend built with Node
 
 * [🧩 About](#-about)
 * [🚀 Key Features](#-key-features)
-* [🛠️ Tech Stack](#️-tech-stack)
-* [Architecture and Folder Structure](#-architecture-folder-structure)
-* [⚙️ Getting Started (Step-by-step)](#getting-started-step-by-step)
-
-  * [📋 Prerequisites](#-prerequisites)
+* [🛠️ Tech Stack](#-tech-stack)
+* [🏗️ Architecture & Folder Structure](#-architecture--folder-structure)
+* [⚙️ Getting Started (Step-by-step)](#-getting-started-step-by-step)
+  * [✅ Prerequisites](#-prerequisites)
   * [📦 Clone & Install](#-clone--install)
   * [🔧 Environment Variables](#-environment-variables)
   * [🗄️ Database Setup & Seeding](#-database-setup--seeding)
   * [🖥️ Run Locally](#-run-locally)
 * [📡 API Overview](#-api-overview)
-
-  * [🔑 Authentication](#-authentication-apis)
-  * [📊 Audit Logs](#-audit-logs-api)
-  * [🛒 Cart](#-cart-api)
-  * [🗂 Category](#-category-api)
-  * [🎟️ Coupon](#-coupon-api)
-  * [🎯 Product Discount](#-product-discount-api)
-  * [🔔 Notifications](#-notification-api)
-  * [📦 Orders](#-order-api)
-  * [🛍️ Products](#-product-api)
+  * [🔑 Authentication APIs](#-authentication-apis)
+  * [📊 Audit Logs API](#-audit-logs-api)
+  * [🛒 Cart API](#-cart-api)
+  * [🗂 Category API](#-category-api)
+  * [🎟️ Coupon API](#-coupon-api)
+  * [🎯 Product Discount API](#-product-discount-api)
+  * [🔔 Notification API](#-notification-api)
+  * [📦 Order API](#-order-api)
+  * [🛍️ Product API](#-product-api)
+  * [⭐ Review API](#-review-api)
+  * [🏬 Seller Profile API](#-seller-profile-api)
+  * [🏬 Shop API](#-shop-api)
+  * [👤 User API](#-user-api)
 * [🛡️ Security & Production Checklist](#-security--production-checklist)
 * [⚡ Performance & Scaling Tips](#-performance--scaling-tips)
 * [🧪 Testing](#-testing)
 * [🚢 CI / CD & Deployment (Docker)](#-ci--cd--deployment-docker)
 * [🤝 Contributing](#-contributing)
-* [🎯 Project Showcase — How to present this to recruiters](#-project-showcase--how-to-present-this-to-recruiters)
+* [🎯 Project Highlights](#-project-highlights)
 * [❓ Troubleshooting & FAQ](#-troubleshooting--faq)
+* [👨‍💻 Author](#-author)
 * [📜 License](#-license)
 
 
@@ -148,7 +151,7 @@ This backend server is built using a modern, scalable, and industry-ready techno
 
 ---
 
-## Architecture and Folder Structure
+## 🏗️ Architecture & Folder Structure
 
 A **clean, layered, and modular architecture** is followed to ensure scalability, maintainability, and developer productivity. Each responsibility is clearly separated, making the codebase easier to extend, debug, and collaborate on in team environments.
 
