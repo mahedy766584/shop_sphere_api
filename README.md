@@ -451,10 +451,31 @@ npm start
 ## 📡 API Overview
 
 This section provides a **high-level summary of main endpoints**.  
-For complete API documentation, provide a **Postman collection** or **Swagger/OpenAPI file**.
+For complete API documentation, provide a **Postman collection**.
 
 **Base URL:** `/api/v1`
 
-> 🔑 **Authentication:** Use `Authorization: Bearer <accessToken>` header for all protected routes.
+> 🔑 **Authentication:** Use `Authorization: <accessToken>` header for all protected routes.
+
+---
+
+### 🧑‍💻 Authentication
+
+| Method | Endpoint                | Access                        | Description |
+|--------|-------------------------|-------------------------------|-------------|
+| POST   | `/auth/login`           | Public                        | Login user (`email`, `password`) → returns `{ accessToken, refreshToken }` |
+| POST   | `/auth/change-password` | Protected (`admin`, `superAdmin`, `customer`, `seller`) | Change current user's password |
+| POST   | `/auth/refresh-token`   | Public                        | Exchange refresh token for a new access token |
+| POST   | `/auth/forget-password` | Public                        | Request password reset link via email |
+| POST   | `/auth/reset-password`  | Public                        | Reset password using reset token |
+| POST   | `/auth/send-verification` | Public                      | Send a verification email to user |
+| GET    | `/auth/verify-email`    | Public                        | Verify user email via token |
+| POST   | `/auth/resend-verification` | Public                    | Resend verification email if not verified |
+
+**Notes:**
+
+* Access token is short-lived.  
+* Use refresh token to reissue access token.  
+* All protected endpoints require `Authorization: Bearer <token>` header.
 
 ---
