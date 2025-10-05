@@ -505,4 +505,19 @@ For complete API documentation, provide a **Postman collection**.
 * Follows **RESTful API best practices** with proper HTTP status codes.  
 * Consistent error handling via centralized error middleware.  
 
+---
+
+## 🗂 Category API
+
+| Endpoint |   Method   | Description |
+|----------|:----------:|-------------|
+| `/category/create-category` | **POST** | Create a new category. Requires validation & admin/superAdmin role. |
+| `/category` | **GET** | Get all categories (for admin, customer, seller). |
+| `/category/active` | **GET** | Fetch only active categories. |
+| `/category/tree` | **GET** | Build and fetch the hierarchical category tree. |
+| `/category/:id` | **GET** | Get details of a single category by ID (admin/superAdmin only). |
+| `/category/:id/child` | **GET** | Fetch child categories under a parent category. |
+| `/category/:id` | **PATCH** | Update details of a single category by ID. |
+| `/category/:id/status` | **PATCH** | Toggle the active/inactive status of a category. |
+| `/category/:id` | **DELETE** | Delete a category by ID. |
 
