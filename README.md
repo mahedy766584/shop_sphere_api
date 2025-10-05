@@ -463,14 +463,14 @@ For complete API documentation, provide a **Postman collection**.
 
 | Endpoint                         | Method   | Description                                           | Access                                   |
 | -------------------------------- | -------- | ----------------------------------------------------- | ---------------------------------------- |
-| `/api/v1/auth/login`             | **POST** | Authenticate user and return access & refresh tokens  | Public                                   |
-| `/api/v1/auth/change-password`   | **POST** | Change the password of the logged-in user             | Protected (`admin`, `superAdmin`, `customer`, `seller`) |
-| `/api/v1/auth/refresh-token`     | **POST** | Generate a new access token using a refresh token     | Public                                   |
-| `/api/v1/auth/forget-password`   | **POST** | Send password reset link to user’s email              | Public                                   |
-| `/api/v1/auth/reset-password`    | **POST** | Reset password using a valid token                    | Public                                   |
-| `/api/v1/auth/send-verification` | **POST** | Send email verification link to user                  | Public                                   |
-| `/api/v1/auth/verify-email`      | **GET**  | Verify user’s email using verification token          | Public                                   |
-| `/api/v1/auth/resend-verification` | **POST** | Resend verification email if not verified             | Public                                   |
+| `/auth/login`             | **POST** | Authenticate user and return access & refresh tokens  | Public                                   |
+| `/auth/change-password`   | **POST** | Change the password of the logged-in user             | Protected (`admin`, `superAdmin`, `customer`, `seller`) |
+| `/auth/refresh-token`     | **POST** | Generate a new access token using a refresh token     | Public                                   |
+| `/auth/forget-password`   | **POST** | Send password reset link to user’s email              | Public                                   |
+| `/auth/reset-password`    | **POST** | Reset password using a valid token                    | Public                                   |
+| `/auth/send-verification` | **POST** | Send email verification link to user                  | Public                                   |
+| `/auth/verify-email`      | **GET**  | Verify user’s email using verification token          | Public                                   |
+| `/auth/resend-verification` | **POST** | Resend verification email if not verified             | Public                                   |
 
 
 **Notes:**
