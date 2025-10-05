@@ -87,6 +87,7 @@ This project is tailored to be a hire-worthy portfolio piece for backend develop
 ---
 
 ## 🛠️ Tech Stack
+slug: #️-tech-stack
 
 This backend server is built using a modern, scalable, and industry-ready technology stack, ensuring performance, security, and maintainability.
 
