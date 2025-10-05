@@ -533,4 +533,18 @@ For complete API documentation, provide a **Postman collection**.
 | `/coupon/:couponId` | **PATCH** | Update an existing coupon by ID. Validation ensures safe update. |
 | `/coupon/:couponId` | **DELETE** | Delete a specific coupon by ID (soft/hard delete depending on implementation). |
 
+## 🎯 Product Discount API
+
+| Endpoint |   Method   | Description |
+|----------|:----------:|-------------|
+| `/discount/create-discount` | **POST** | Create a new discount for a product. Requires validation and seller role. |
+| `/discount/top-discount` | **GET** | Fetch top discounted products. |
+| `/discount/:discountId` | **PATCH** | Update an existing discount by ID. |
+| `/discount/:discountId` | **DELETE** | Delete a discount by ID. |
+| `/discount` | **GET** | Get all discounts. Supports filtering and pagination if implemented. |
+| `/discount/:discountId` | **GET** | Get details of a specific discount by ID. |
+| `/discount/:productId/product` | **GET** | Get all discounts applied to a specific product. |
+| `/discount/:discountId/status` | **PATCH** | Update the active/inactive status of a discount. |
+| `/discount/:productId/sync` | **GET** | Sync product price with active discount for a given product. |
+
 
