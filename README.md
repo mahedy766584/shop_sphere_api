@@ -641,3 +641,54 @@ For complete API documentation, provide a **Postman collection**.
 | `/users/:id` | **PATCH** | Update a specific user’s profile by ID (Admin, SuperAdmin, Seller, Customer). |
 
 
+## 🧪 Testing
+
+```bash
+npm run test
+```
+
+* Unit testing with **Jest**
+* Integration testing with **Supertest**
+
+---
+
+## 🚢 CI/CD & Deployment
+
+* **Dockerized setup** for containerized deployment
+* **GitHub Actions** for automated CI/CD pipelines
+* Deployable to **AWS**, **Heroku**, **DigitalOcean**, or **Vercel**
+
+---
+
+## 🤝 Contributing
+Contributions, issues, and feature requests are welcome!  
+Feel free to fork the repo and submit a pull request.
+
+---
+
+## 🎯 Project Highlights
+
+This backend is **production-ready** and **portfolio-grade**:
+
+* ✅ Real-world e-commerce features
+* ✅ Scalable & secure architecture
+* ✅ Clean modular folder structure
+* ✅ Optimized for performance & maintainability
+
+---
+
+## ❓ Troubleshooting & FAQ
+
+* **MongoDB not connecting?** → Check `.env` config & whitelist IPs.
+* **JWT expiring too quickly?** → Update `JWT_ACCESS_EXPIRES_IN` in `.env`.
+* **Seeder not working?** → Ensure MongoDB is running before executing seed scripts.
+
+---
+
+## 👨‍💻 Author
+- [Mohammad Mehedi Hasan](https://github.com/mahedy766584)
+- LinkedIn: [[Mohammad Mehedi Hasan](https://linkedin.com/in/mohammad-mehedi-hasan-364b2432b)]
+
+## 📜 License
+
+This project is licensed under the **MIT License**.
