@@ -571,3 +571,68 @@ For complete API documentation, provide a **Postman collection**.
 | `/orders/:invoiceId/cancel` | **POST** | Cancel an order. Only the customer who placed the order can cancel. |
 
 
+## 🛍️ Product API
+
+| Endpoint |   Method   | Description |
+|----------|:----------:|-------------|
+| `/products/create-product/:shopId` | **POST** | Create a new product in a shop. Accepts multiple images (`files`) and validated payload. |
+| `/products` | **GET** | Fetch all products. Supports filtering, search, and pagination. |
+| `/products/:productId` | **GET** | Get details of a single product by ID. |
+| `/products/:shopId/shop` | **GET** | Fetch all products belonging to a specific shop. |
+| `/products/:productId` | **PUT** | Update a product (with image re-upload if provided). Payload validated before saving. |
+| `/products/:productId` | **PATCH** | Restore a previously soft-deleted product. |
+| `/products/:productId/stock` | **PATCH** | Update stock quantity of a product. Validates positive integer stock values. |
+| `/products/:productId/status` | **PATCH** | Toggle the availability status (active/inactive) of a product. |
+| `/products/:productId/features` | **PATCH** | Toggle product featured flag (mark/unmark as featured). |
+| `/products/:productId` | **DELETE** | Soft delete a product (kept in DB but hidden from customers). |
+
+
+## ⭐ Review API
+
+| Endpoint |   Method   | Description |
+|----------|:----------:|-------------|
+| `/reviews/create-review` | **POST** | Create a new review for a product. Supports multiple file uploads (max 10). Requires validation. |
+| `/reviews/:productId` | **GET** | Fetch all reviews of a specific product by its ID. |
+| `/reviews/:reviewId/review` | **GET** | Fetch details of a single review by its ID. |
+| `/reviews/:productId/reviews` | **GET** | Get aggregated product review details (average rating, total reviews, etc.). |
+| `/reviews/:reviewId` | **PUT** | Update an existing review. Supports multiple file uploads (max 10). Requires validation. |
+| `/reviews/:reviewId` | **DELETE** | Delete a specific review by its ID. |
+
+
+## 🏬 Seller Profile API
+
+| Endpoint |   Method   | Description |
+|----------|:----------:|-------------|
+| `/seller-profile/apply-for-seller` | **POST** | Apply to become a seller (only for customers). Requires validation of shop & business details. |
+| `/seller-profile/reapply` | **POST** | Reapply if the previous seller request was rejected. |
+| `/seller-profile/me` | **PATCH** | Update own seller profile (only for sellers). Validation ensures correct data structure. |
+| `/seller-profile/:sellerId/status` | **PATCH** | Update seller status (approve/reject). Only for admins & superAdmins. |
+| `/seller-profile` | **GET** | Get all seller profiles. Only accessible by admins & superAdmins. |
+| `/seller-profile/my-profile` | **GET** | Fetch authenticated seller’s own profile. |
+| `/seller-profile/my-profile` | **DELETE** | Delete own seller profile (seller, admin, or superAdmin). |
+
+
+## 🏬 Shop API
+
+| Endpoint |   Method   | Description |
+|----------|:----------:|-------------|
+| `/shop/create-shop` | **POST** | Create a new shop (Seller only). Validates request body before saving. |
+| `/shop/:shopId` | **PATCH** | Update an existing shop owned by the seller. Requires validation. |
+| `/shop/:shopId/verify` | **PATCH** | Verify a shop (Admin / SuperAdmin only). Ensures shop legitimacy. |
+| `/shop/:shopId` | **DELETE** | Soft delete a shop. Can be performed by Seller, Admin, or SuperAdmin. |
+| `/shop` | **GET** | Fetch all shops (Admin / SuperAdmin only). Supports pagination & filtering. |
+| `/shop/owner` | **GET** | Get the authenticated seller’s own shop details. |
+
+
+## 👤 User API
+
+| Endpoint |   Method   | Description |
+|----------|:----------:|-------------|
+| `/users/create-user` | **POST** | Create a new user. Supports file upload (profile image) via `file` field. Request body passed as JSON in `data`. |
+| `/users` | **GET** | Fetch all users (Admin & SuperAdmin only). |
+| `/users/get-me` | **GET** | Get profile details of the currently authenticated user. |
+| `/users/:id` | **GET** | Fetch details of a single user by ID (Admin & SuperAdmin only). |
+| `/users/my-profile` | **PATCH** | Update the authenticated user’s own profile. Requires validation. |
+| `/users/:id` | **PATCH** | Update a specific user’s profile by ID (Admin, SuperAdmin, Seller, Customer). |
+
+
