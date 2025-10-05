@@ -6,7 +6,7 @@ A production-ready, professional Multi-Seller E-commerce Backend built with Node
 
 * [🧩 About](#-about)
 * [🚀 Key Features](#-key-features)
-* [🛠️ Tech Stack](#-tech-stack)
+* [🛠️ Tech Stack](#️-tech-stack)
 * [🏗️ Architecture & Folder Structure](#-architecture--folder-structure)
 * [⚙️ Getting Started (Step-by-step)](#-getting-started-step-by-step)
 
@@ -87,7 +87,6 @@ This project is tailored to be a hire-worthy portfolio piece for backend develop
 ---
 
 ## 🛠️ Tech Stack
-slug: #️-tech-stack
 
 This backend server is built using a modern, scalable, and industry-ready technology stack, ensuring performance, security, and maintainability.
 
