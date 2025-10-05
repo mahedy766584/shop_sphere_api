@@ -477,6 +477,6 @@ For complete API documentation, provide a **Postman collection**.
 
 * Access token is short-lived.  
 * Use refresh token to reissue access token.  
-* All protected endpoints require `Authorization: Bearer <token>` header.
+* All protected endpoints require `Authorization:<token>` header.
 
 ---
