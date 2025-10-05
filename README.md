@@ -521,3 +521,16 @@ For complete API documentation, provide a **Postman collection**.
 | `/category/:id/status` | **PATCH** | Toggle the active/inactive status of a category. |
 | `/category/:id` | **DELETE** | Delete a category by ID. |
 
+
+## 🎟️ Coupon API
+
+| Endpoint |   Method   | Description |
+|----------|:----------:|-------------|
+| `/coupon/create-coupon` | **POST** | Create a new coupon (Admin/Seller only). Validates coupon details before saving. |
+| `/coupon/apply` | **POST** | Apply a coupon code to the current cart/order. Validates code and conditions. |
+| `/coupon` | **GET** | Retrieve all available coupons. Supports filters and pagination if implemented. |
+| `/coupon/active` | **GET** | Fetch only active (valid) coupons. Useful for checkout flow. |
+| `/coupon/:couponId` | **PATCH** | Update an existing coupon by ID. Validation ensures safe update. |
+| `/coupon/:couponId` | **DELETE** | Delete a specific coupon by ID (soft/hard delete depending on implementation). |
+
+
