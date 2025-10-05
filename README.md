@@ -485,3 +485,21 @@ For complete API documentation, provide a **Postman collection**.
 | GET | `/audit-logs` | `superAdmin`, `admin`, `seller` | Fetch all audit logs |
 | GET | `/audit-logs/:id` | `superAdmin`, `admin`, `seller` | Fetch details of a specific audit log by ID |
 
+## 🛒 Cart API Endpoints
+
+| Method | Endpoint | Roles Allowed | Description |
+|--------|----------|---------------|-------------|
+| **POST** | `/api/v1/cart/add-to-cart` | `superAdmin`, `admin`, `seller`, `customer` | Add a product to the user’s cart. Requires validation of product & quantity. |
+| **GET** | `/api/v1/cart` | `superAdmin`, `admin`, `seller`, `customer` | Get the authenticated user’s cart with all items. |
+| **PATCH** | `/api/v1/cart/:cartId` | `superAdmin`, `admin`, `seller`, `customer` | Update the quantity of a specific cart item. Validation ensures positive integer values. |
+| **DELETE** | `/api/v1/cart/:cartId` | `superAdmin`, `admin`, `seller`, `customer` | Remove a specific item from the user’s cart. |
+
+### ⚡ Notes
+
+* All routes are **protected** and require `Authorization: Bearer <token>`.  
+* Input validation is handled via **Zod/Yup schemas** in `CartValidation`.  
+* Business logic is isolated in `CartController` and `CartService` layers.  
+* Follows **RESTful API best practices** with proper HTTP status codes.  
+* Consistent error handling via centralized error middleware.  
+
+
