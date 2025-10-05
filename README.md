@@ -478,23 +478,23 @@ For complete API documentation, provide a **Postman collection**.
 * Use refresh token to reissue access token.  
 * All protected endpoints require `Authorization:<token>` header.
 
-## 📑 Audit Logs API
+## 📊 Audit Logs API
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| **GET** | `/audit-logs` | Fetch all audit logs. |
-| **GET** | `/audit-logs/:id` | Fetch details of a specific audit log by ID. |
+| Endpoint |   Method   | Description |
+|----------|:----------:|-------------|
+| `/audit-logs` | **GET** | Fetch all audit logs |
+| `/audit-logs/:id` | **GET** | Fetch details of a specific audit log by ID |
 
 ---
 
 ## 🛒 Cart API
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| **POST** | `/cart/add-to-cart` | Add a product to the user’s cart. Requires validation of product & quantity. |
-| **GET** | `/cart` | Get the authenticated user’s cart with all items. |
-| **PATCH** | `/cart/:cartId` | Update the quantity of a specific cart item. Validation ensures positive integer values. |
-| **DELETE** | `/cart/:cartId` | Remove a specific item from the user’s cart. |
+| Endpoint |   Method   | Description |
+|----------|:----------:|-------------|
+| `/cart/add-to-cart` | **POST** | Add a product to the user’s cart. Requires validation of product & quantity. |
+| `/cart` | **GET** | Get the authenticated user’s cart with all items. |
+| `/cart/:cartId` | **PATCH** | Update the quantity of a specific cart item. Validation ensures positive integer values. |
+| `/cart/:cartId` | **DELETE** | Remove a specific item from the user’s cart. |
 
 
 ### ⚡ Notes
