@@ -478,7 +478,7 @@ For complete API documentation, provide a **Postman collection**.
 * Use refresh token to reissue access token.  
 * All protected endpoints require `Authorization:<token>` header.
 
-### 📜 Audit Logs
+## 📜 Audit Logs
 
 | Method | Endpoint | Roles Allowed | Description |
 |--------|----------|---------------|-------------|
